@@ -6,6 +6,7 @@ A collection of gems
 - [dorian-all](https://github.com/dorianmariefr/all)
 - [dorian-replace](https://github.com/dorianmariefr/replace)
 - [dorian-shuffle](https://github.com/dorianmariefr/shuffle)
+- [dorian-git-tree](https://github.com/dorianmariefr/git-tree)
 
 ### Install
 

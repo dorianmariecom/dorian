@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'dorian'
-  s.version = '0.1.5'
+  s.version = '0.1.6'
   s.summary = 'A collection of gems'
   s.description = s.summary
   s.authors = ['Dorian Marié']
@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'dorian-shuffle', '~> 0.1.2'
   s.add_runtime_dependency 'dorian-times', '~> 0.1.0'
   s.add_runtime_dependency 'dorian-yaml-compare', '~> 0.1.0'
-  s.add_runtime_dependency 'dorian-yaml-read-write', '~> 0.1.0'
+  s.add_runtime_dependency 'dorian-yaml-read-write', '~> 0.1.1'
 end

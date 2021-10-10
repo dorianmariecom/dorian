@@ -1,16 +1,19 @@
 Gem::Specification.new do |s|
-  s.name = "dorian"
-  s.version = "0.1.1"
-  s.summary = "A collection of gems"
-  s.description = "dorian-each, dorian-all, dorian-replace, dorian-shuffle, dorian-git-tree"
-  s.authors = ["Dorian Marié"]
-  s.email = "dorian@dorianmarie.fr"
-  s.homepage = "https://github.com/dorianmariefr/gem"
-  s.license = "MIT"
+  s.name = 'dorian'
+  s.version = '0.1.4'
+  s.summary = 'A collection of gems'
+  s.description = s.summary
+  s.authors = ['Dorian Marié']
+  s.email = 'dorian@dorianmarie.fr'
+  s.homepage = 'https://github.com/dorianmariefr/gem'
+  s.license = 'MIT'
+  s.files = []
 
-  s.add_runtime_dependency 'dorian-each'
-  s.add_runtime_dependency 'dorian-all'
-  s.add_runtime_dependency 'dorian-replace'
-  s.add_runtime_dependency 'dorian-shuffle'
-  s.add_runtime_dependency 'dorian-git-tree'
+  s.add_runtime_dependency 'dorian-all', '~> 0.1.4'
+  s.add_runtime_dependency 'dorian-each', '~> 0.1.3'
+  s.add_runtime_dependency 'dorian-git-tree', '~> 0.1.2'
+  s.add_runtime_dependency 'dorian-replace', '~> 0.1.5'
+  s.add_runtime_dependency 'dorian-shuffle', '~> 0.1.2'
+  s.add_runtime_dependency 'dorian-times', '~> 0.1.0'
+  s.add_runtime_dependency 'dorian-yaml-compare', '~> 0.1.0'
 end

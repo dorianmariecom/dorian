@@ -9,6 +9,7 @@ A collection of gems
 - [dorian-shuffle](https://github.com/dorianmariefr/shuffle)
 - [dorian-times](https://github.com/dorianmariefr/times)
 - [dorian-yaml-compare](https://github.com/dorianmariefr/yaml-compare)
+- [dorian-yaml-read-write](https://github.com/dorianmariefr/yaml-read-write)
 
 ### Install
 

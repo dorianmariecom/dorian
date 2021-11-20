@@ -3,6 +3,7 @@
 A collection of gems
 
 - [dorian-all](https://github.com/dorianmariefr/all)
+- [dorian-dot](https://github.com/dorianmariefr/dot)
 - [dorian-each](https://github.com/dorianmariefr/each)
 - [dorian-git-tree](https://github.com/dorianmariefr/git-tree)
 - [dorian-pw](https://github.com/dorianmariefr/pw)

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "dorian"
-  s.version = "0.4.2"
+  s.version = "0.5.0"
   s.summary = "A collection of gems"
   s.description =
     "A collection of gem by Dorian Marié: all, dot, each, git-tree, replace, shuffle, sort-json, sort-yaml, times, yaml-compare, yaml-read-write"
@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "dorian-dot", "~> 0"
   s.add_runtime_dependency "dorian-each", "~> 0"
   s.add_runtime_dependency "dorian-git-tree", "~> 0"
+  s.add_runtime_dependency "dorian-pretty", "~> 0"
   s.add_runtime_dependency "dorian-replace", "~> 0"
   s.add_runtime_dependency "dorian-shuffle", "~> 0"
   s.add_runtime_dependency "dorian-sort-json", "~> 0"

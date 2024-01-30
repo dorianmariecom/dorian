@@ -1,0 +1,43 @@
+PATH
+  remote: .
+  specs:
+    dorian (0.4.2)
+      dorian-all (~> 0)
+      dorian-dot (~> 0)
+      dorian-each (~> 0)
+      dorian-git-tree (~> 0)
+      dorian-replace (~> 0)
+      dorian-shuffle (~> 0)
+      dorian-sort-json (~> 0)
+      dorian-sort-yaml (~> 0)
+      dorian-times (~> 0)
+      dorian-yaml-compare (~> 0)
+      dorian-yaml-read-write (~> 0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    dorian-all (0.5.2)
+    dorian-dot (0.1.0)
+    dorian-each (0.3.1)
+    dorian-git-tree (0.3.0)
+    dorian-replace (0.3.0)
+    dorian-shuffle (0.2.0)
+    dorian-sort-json (0.4.0)
+    dorian-sort-yaml (0.2.1)
+    dorian-times (0.3.0)
+    dorian-yaml-compare (0.3.0)
+    dorian-yaml-read-write (0.2.0)
+
+PLATFORMS
+  arm64-darwin-23
+  ruby
+
+DEPENDENCIES
+  dorian!
+
+RUBY VERSION
+   ruby 3.3.0p0
+
+BUNDLED WITH
+   2.5.5

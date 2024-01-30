@@ -2,12 +2,13 @@ Gem::Specification.new do |s|
   s.name = "dorian"
   s.version = "0.4.2"
   s.summary = "A collection of gems"
-  s.description = "A collection of gem by Dorian Marié: all, dot, each, git-tree, replace, shuffle, sort-json, sort-yaml, times, yaml-compare, yaml-read-write"
+  s.description =
+    "A collection of gem by Dorian Marié: all, dot, each, git-tree, replace, shuffle, sort-json, sort-yaml, times, yaml-compare, yaml-read-write"
   s.authors = ["Dorian Marié"]
   s.email = "dorian@dorianmarie.fr"
   s.homepage = "https://github.com/dorianmariefr/dorian"
   s.license = "MIT"
-  s.files = ["LICENSE", "README.md", "dorian.gemspec"]
+  s.files = %w[LICENSE README.md dorian.gemspec]
 
   s.add_runtime_dependency "dorian-all", "~> 0"
   s.add_runtime_dependency "dorian-dot", "~> 0"

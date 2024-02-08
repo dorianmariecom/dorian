@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dorian (0.5.1)
+    dorian (0.5.2)
       dorian-all (~> 0)
       dorian-dot (~> 0)
       dorian-each (~> 0)

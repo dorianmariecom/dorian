@@ -1,13 +1,14 @@
 PATH
   remote: .
   specs:
-    dorian (0.5.2)
+    dorian (0.5.3)
       dorian-all (~> 0)
       dorian-dot (~> 0)
       dorian-each (~> 0)
       dorian-git-ls-ruby-files (~> 0)
       dorian-git-tree (~> 0)
       dorian-pretty (~> 0)
+      dorian-release (~> 0)
       dorian-replace (~> 0)
       dorian-shuffle (~> 0)
       dorian-sort-json (~> 0)
@@ -31,6 +32,7 @@ GEM
     dorian-pretty (0.2.0)
       git (~> 1)
       syntax_tree (~> 6)
+    dorian-release (0.1.0)
     dorian-replace (0.3.1)
     dorian-shuffle (0.2.1)
     dorian-sort-json (0.4.1)

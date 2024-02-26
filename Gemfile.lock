@@ -1,12 +1,13 @@
 PATH
   remote: .
   specs:
-    dorian (0.5.3)
+    dorian (0.5.5)
       dorian-all (~> 0)
       dorian-dot (~> 0)
       dorian-each (~> 0)
       dorian-git-ls-ruby-files (~> 0)
       dorian-git-tree (~> 0)
+      dorian-parallel (~> 0)
       dorian-pretty (~> 0)
       dorian-release (~> 0)
       dorian-replace (~> 0)
@@ -14,6 +15,7 @@ PATH
       dorian-sort-json (~> 0)
       dorian-sort-yaml (~> 0)
       dorian-times (~> 0)
+      dorian-top (~> 0)
       dorian-yaml-compare (~> 0)
       dorian-yaml-read-write (~> 0)
 
@@ -29,6 +31,8 @@ GEM
     dorian-git-ls-ruby-files (0.1.1)
       git (~> 1)
     dorian-git-tree (0.3.1)
+    dorian-parallel (0.1.0)
+      parallel
     dorian-pretty (0.2.0)
       git (~> 1)
       syntax_tree (~> 6)
@@ -38,11 +42,13 @@ GEM
     dorian-sort-json (0.4.1)
     dorian-sort-yaml (0.2.2)
     dorian-times (0.3.1)
+    dorian-top (0.1.0)
     dorian-yaml-compare (0.3.1)
     dorian-yaml-read-write (0.2.1)
     git (1.19.1)
       addressable (~> 2.8)
       rchardet (~> 1.8)
+    parallel (1.24.0)
     prettier_print (1.2.1)
     public_suffix (5.0.4)
     rchardet (1.8.0)

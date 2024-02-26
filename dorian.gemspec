@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "dorian-git-ls-ruby-files", "~> 0"
   s.add_runtime_dependency "dorian-git-tree", "~> 0"
   s.add_runtime_dependency "dorian-pretty", "~> 0"
+  s.add_runtime_dependency "dorian-release", "~> 0"
   s.add_runtime_dependency "dorian-replace", "~> 0"
   s.add_runtime_dependency "dorian-shuffle", "~> 0"
   s.add_runtime_dependency "dorian-sort-json", "~> 0"

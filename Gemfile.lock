@@ -3,6 +3,7 @@ PATH
   specs:
     dorian (0.5.5)
       dorian-all (~> 0)
+      dorian-anonymize-yaml (~> 0)
       dorian-dot (~> 0)
       dorian-each (~> 0)
       dorian-git-ls-ruby-files (~> 0)
@@ -25,6 +26,7 @@ GEM
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     dorian-all (0.5.3)
+    dorian-anonymize-yaml (0.1.0)
     dorian-dot (0.4.1)
       git (~> 1)
     dorian-each (0.3.2)

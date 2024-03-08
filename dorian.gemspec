@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dorian"
-  s.version = "0.5.5"
+  s.version = "0.5.6"
   s.summary = "A collection of gems"
   s.description =
     "A collection of gem by Dorian Marié: all, dot, each, git-tree, replace, shuffle, sort-json, sort-yaml, times, yaml-compare, yaml-read-write"
@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.license = "MIT"
   s.files = %w[LICENSE README.md dorian.gemspec]
 
+  s.add_dependency "dorian-anonymize-yaml", "~> 0"
   s.add_dependency "dorian-all", "~> 0"
   s.add_dependency "dorian-dot", "~> 0"
   s.add_dependency "dorian-each", "~> 0"

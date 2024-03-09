@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.description =
     "A collection of gem by Dorian Marié: all, dot, each, git-tree, replace, shuffle, sort-json, sort-yaml, times, yaml-compare, yaml-read-write"
   s.authors = ["Dorian Marié"]
-  s.email = "dorian@dorianmarie.fr"
+  s.email = "dorian@dorianmarie.com"
   s.homepage = "https://github.com/dorianmariecom/dorian"
   s.license = "MIT"
   s.files = %w[LICENSE README.md dorian.gemspec]

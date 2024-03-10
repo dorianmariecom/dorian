@@ -27,7 +27,7 @@ GEM
       public_suffix (>= 2.0.2, < 6.0)
     dorian-all (0.5.4)
     dorian-anonymize-yaml (0.1.2)
-    dorian-dot (0.4.2)
+    dorian-dot (0.4.3)
       git (~> 1)
     dorian-each (0.3.3)
     dorian-git-ls-ruby-files (0.1.2)

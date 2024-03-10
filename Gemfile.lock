@@ -40,7 +40,7 @@ GEM
       syntax_tree (~> 6)
     dorian-release (0.1.1)
     dorian-replace (0.4.1)
-    dorian-shuffle (0.2.2)
+    dorian-shuffle (0.4.0)
     dorian-sort-json (0.4.3)
     dorian-sort-yaml (0.3.1)
     dorian-times (0.3.2)

@@ -5,15 +5,17 @@ Gem::Specification.new do |s|
   s.version = "0.5.7"
   s.summary = "A collection of gems"
   s.description =
-    "A collection of gem by Dorian Marié: all, dot, each, git-tree, replace, shuffle, sort-json, sort-yaml, times, yaml-compare, yaml-read-write"
+    "A collection of gems by Dorian Marié"
   s.authors = ["Dorian Marié"]
   s.email = "dorian@dorianmarie.com"
   s.homepage = "https://github.com/dorianmariecom/dorian"
   s.license = "MIT"
   s.files = %w[LICENSE README.md dorian.gemspec]
 
-  s.add_dependency "dorian-anonymize-yaml", "~> 0"
   s.add_dependency "dorian-all", "~> 0"
+  s.add_dependency "dorian-anonymize", "~> 0"
+  s.add_dependency "dorian-anonymize-json", "~> 0"
+  s.add_dependency "dorian-anonymize-yaml", "~> 0"
   s.add_dependency "dorian-dot", "~> 0"
   s.add_dependency "dorian-each", "~> 0"
   s.add_dependency "dorian-git-ls-ruby-files", "~> 0"

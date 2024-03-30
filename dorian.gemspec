@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dorian"
-  s.version = "0.5.7"
+  s.version = "0.5.8"
   s.summary = "A collection of gems"
   s.description =
     "A collection of gems by Dorian Marié"

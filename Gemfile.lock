@@ -1,12 +1,12 @@
 PATH
   remote: .
   specs:
-    dorian (0.6.0)
+    dorian (0.6.1)
       dorian-all (~> 0)
       dorian-anonymize (~> 0)
       dorian-anonymize-json (~> 0)
       dorian-anonymize-yaml (~> 0)
-      dorian-dirs (~> 0)
+      dorian-dir (~> 0)
       dorian-dot (~> 0)
       dorian-each (~> 0)
       dorian-git-ls-ruby-files (~> 0)
@@ -49,7 +49,7 @@ GEM
     dorian-anonymize-json (0.1.4)
       json (~> 2)
     dorian-anonymize-yaml (0.1.6)
-    dorian-dirs (0.1.0)
+    dorian-dir (0.2.0)
     dorian-dot (0.5.4)
       git (~> 1)
     dorian-each (0.3.7)

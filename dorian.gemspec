@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dorian"
-  s.version = "0.5.12"
+  s.version = "0.6.0"
   s.summary = "A collection of gems"
   s.description = "A collection of gems by Dorian Marié"
   s.authors = ["Dorian Marié"]
@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.add_dependency "dorian-anonymize", "~> 0"
   s.add_dependency "dorian-anonymize-json", "~> 0"
   s.add_dependency "dorian-anonymize-yaml", "~> 0"
+  s.add_dependency "dorian-dirs", "~> 0"
   s.add_dependency "dorian-dot", "~> 0"
   s.add_dependency "dorian-each", "~> 0"
   s.add_dependency "dorian-git-ls-ruby-files", "~> 0"

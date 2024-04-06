@@ -44,7 +44,7 @@ GEM
     concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
     diff-lcs (1.5.1)
-    dorian-all (0.5.8)
+    dorian-all (0.6.0)
     dorian-anonymize (0.1.4)
     dorian-anonymize-json (0.1.4)
       json (~> 2)

@@ -50,7 +50,7 @@ GEM
       json (~> 2)
     dorian-anonymize-yaml (0.1.6)
     dorian-dir (0.3.0)
-    dorian-dot (0.5.4)
+    dorian-dot (0.6.0)
       git (~> 1)
     dorian-each (0.3.7)
     dorian-git-ls-ruby-files (0.1.6)

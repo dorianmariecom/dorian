@@ -67,7 +67,7 @@ GEM
     dorian-shuffle (0.4.3)
     dorian-sort-json (0.4.6)
     dorian-sort-yaml (0.3.4)
-    dorian-times (0.4.3)
+    dorian-times (0.4.4)
     dorian-top (0.1.4)
     dorian-yaml-compare (0.3.6)
     dorian-yaml-read-write (0.2.6)

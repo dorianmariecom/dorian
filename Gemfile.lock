@@ -88,7 +88,7 @@ GEM
     prettier_print (1.2.1)
     public_suffix (6.0.0)
     racc (1.8.0)
-    rack (3.1.4)
+    rack (3.1.5)
     rainbow (3.1.1)
     rchardet (1.8.0)
     regexp_parser (2.9.2)

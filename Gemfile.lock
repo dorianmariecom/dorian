@@ -2,26 +2,26 @@ PATH
   remote: .
   specs:
     dorian (0.6.1)
-      dorian-all (~> 0)
-      dorian-anonymize (~> 0)
-      dorian-anonymize-json (~> 0)
-      dorian-anonymize-yaml (~> 0)
-      dorian-dir (~> 0)
-      dorian-dot (~> 0)
-      dorian-each (~> 0)
-      dorian-git-ls-ruby-files (~> 0)
-      dorian-git-tree (~> 0)
-      dorian-parallel (~> 0)
-      dorian-pretty (~> 0)
-      dorian-release (~> 0)
-      dorian-replace (~> 0)
-      dorian-shuffle (~> 0)
-      dorian-sort-json (~> 0)
-      dorian-sort-yaml (~> 0)
-      dorian-times (~> 0)
-      dorian-top (~> 0)
-      dorian-yaml-compare (~> 0)
-      dorian-yaml-read-write (~> 0)
+      dorian-all
+      dorian-anonymize
+      dorian-anonymize-json
+      dorian-anonymize-yaml
+      dorian-dir
+      dorian-dot
+      dorian-each
+      dorian-git-ls-ruby-files
+      dorian-git-tree
+      dorian-parallel
+      dorian-pretty
+      dorian-release
+      dorian-replace
+      dorian-shuffle
+      dorian-sort-json
+      dorian-sort-yaml
+      dorian-times
+      dorian-top
+      dorian-yaml-compare
+      dorian-yaml-read-write
 
 GEM
   remote: https://rubygems.org/

@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency "dorian-anonymize-json"
   s.add_dependency "dorian-anonymize-yaml"
   s.add_dependency "dorian-dir"
+  s.add_dependency "dorian-dir-and-self"
   s.add_dependency "dorian-dot"
   s.add_dependency "dorian-each"
   s.add_dependency "dorian-git-ls-ruby-files"

@@ -7,6 +7,7 @@ PATH
       dorian-anonymize-json
       dorian-anonymize-yaml
       dorian-dir
+      dorian-dir-and-self
       dorian-dot
       dorian-each
       dorian-git-ls-ruby-files
@@ -50,6 +51,7 @@ GEM
       json
     dorian-anonymize-yaml (0.2.0)
     dorian-dir (0.4.0)
+    dorian-dir-and-self (0.1.0)
     dorian-dot (0.7.0)
       git
     dorian-each (0.4.0)

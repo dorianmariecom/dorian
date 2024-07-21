@@ -52,7 +52,7 @@ GEM
     dorian-anonymize-yaml (0.2.0)
     dorian-dir (0.5.0)
       git
-    dorian-dir-and-self (0.2.0)
+    dorian-dir-and-self (0.3.0)
       git
     dorian-dot (0.7.0)
       git

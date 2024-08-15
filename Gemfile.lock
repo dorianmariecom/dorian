@@ -1,11 +1,12 @@
 PATH
   remote: .
   specs:
-    dorian (0.7.2)
+    dorian (0.7.3)
       dorian-all
       dorian-anonymize
       dorian-anonymize-json
       dorian-anonymize-yaml
+      dorian-csv-all
       dorian-csv-each
       dorian-dir
       dorian-dir-and-self
@@ -53,6 +54,9 @@ GEM
     dorian-anonymize-json (0.2.0)
       json
     dorian-anonymize-yaml (0.2.0)
+    dorian-csv-all (0.0.1)
+      activesupport
+      csv
     dorian-csv-each (0.4.1)
       activesupport
       csv

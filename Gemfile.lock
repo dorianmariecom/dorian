@@ -1,11 +1,12 @@
 PATH
   remote: .
   specs:
-    dorian (0.7.1)
+    dorian (0.7.2)
       dorian-all
       dorian-anonymize
       dorian-anonymize-json
       dorian-anonymize-yaml
+      dorian-csv-each
       dorian-dir
       dorian-dir-and-self
       dorian-dot
@@ -45,12 +46,16 @@ GEM
     bigdecimal (3.1.8)
     concurrent-ruby (1.3.4)
     connection_pool (2.4.1)
+    csv (3.3.0)
     diff-lcs (1.5.1)
     dorian-all (0.7.0)
     dorian-anonymize (0.2.0)
     dorian-anonymize-json (0.2.0)
       json
     dorian-anonymize-yaml (0.2.0)
+    dorian-csv-each (0.4.1)
+      activesupport
+      csv
     dorian-dir (0.5.0)
       git
     dorian-dir-and-self (0.3.0)

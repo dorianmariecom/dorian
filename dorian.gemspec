@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dorian"
-  s.version = "0.7.6"
+  s.version = "0.7.7"
   s.summary = "A collection of gems"
   s.description = "A collection of gems by Dorian Marié"
   s.authors = ["Dorian Marié"]
@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency "dorian-csv-all"
   s.add_dependency "dorian-csv-each"
   s.add_dependency "dorian-csv-merge"
+  s.add_dependency "dorian-csv-pluck"
   s.add_dependency "dorian-dir"
   s.add_dependency "dorian-dir-and-self"
   s.add_dependency "dorian-dot"

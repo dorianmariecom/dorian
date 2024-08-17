@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dorian (0.8.1)
+    dorian (0.9.0)
       dorian-all
       dorian-anonymize
       dorian-anonymize-json
@@ -13,12 +13,23 @@ PATH
       dorian-csv-map
       dorian-csv-merge
       dorian-csv-pluck
+      dorian-csv-uniq
       dorian-dir
       dorian-dir-and-self
       dorian-dot
       dorian-each
       dorian-git-ls-ruby-files
       dorian-git-tree
+      dorian-json-all
+      dorian-json-compare
+      dorian-json-deep-each
+      dorian-json-deep-map
+      dorian-json-deep-pluck
+      dorian-json-each
+      dorian-json-map
+      dorian-json-pluck
+      dorian-json-read-write
+      dorian-json-uniq
       dorian-parallel
       dorian-pretty
       dorian-release
@@ -30,8 +41,16 @@ PATH
       dorian-times
       dorian-top
       dorian-write
+      dorian-yaml-all
       dorian-yaml-compare
+      dorian-yaml-deep-each
+      dorian-yaml-deep-map
+      dorian-yaml-deep-pluck
+      dorian-yaml-each
+      dorian-yaml-map
+      dorian-yaml-pluck
       dorian-yaml-read-write
+      dorian-yaml-uniq
 
 GEM
   remote: https://rubygems.org/
@@ -79,6 +98,7 @@ GEM
     dorian-csv-pluck (0.0.1)
       activesupport
       csv
+    dorian-csv-uniq (0.0.1)
     dorian-dir (0.5.0)
       git
     dorian-dir-and-self (0.3.0)
@@ -90,6 +110,16 @@ GEM
       git
     dorian-git-tree (0.5.0)
       git
+    dorian-json-all (0.0.1)
+    dorian-json-compare (0.0.1)
+    dorian-json-deep-each (0.0.1)
+    dorian-json-deep-map (0.0.1)
+    dorian-json-deep-pluck (0.0.1)
+    dorian-json-each (0.0.1)
+    dorian-json-map (0.0.1)
+    dorian-json-pluck (0.0.1)
+    dorian-json-read-write (0.0.1)
+    dorian-json-uniq (0.0.1)
     dorian-parallel (0.2.0)
       parallel
     dorian-pretty (0.3.0)
@@ -104,8 +134,16 @@ GEM
     dorian-times (0.5.0)
     dorian-top (0.2.0)
     dorian-write (0.0.1)
+    dorian-yaml-all (0.0.1)
     dorian-yaml-compare (0.4.0)
+    dorian-yaml-deep-each (0.0.1)
+    dorian-yaml-deep-map (0.0.1)
+    dorian-yaml-deep-pluck (0.0.1)
+    dorian-yaml-each (0.0.1)
+    dorian-yaml-map (0.0.1)
+    dorian-yaml-pluck (0.0.1)
     dorian-yaml-read-write (0.3.0)
+    dorian-yaml-uniq (0.0.1)
     drb (2.2.1)
     git (2.1.1)
       activesupport (>= 5.0)

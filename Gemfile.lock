@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dorian (0.9.0)
+    dorian (0.9.1)
       dorian-all
       dorian-anonymize
       dorian-anonymize-json
@@ -36,6 +36,7 @@ PATH
       dorian-rename
       dorian-replace
       dorian-shuffle
+      dorian-sort-csv
       dorian-sort-json
       dorian-sort-yaml
       dorian-times
@@ -129,6 +130,7 @@ GEM
     dorian-rename (0.0.1)
     dorian-replace (0.5.0)
     dorian-shuffle (0.5.0)
+    dorian-sort-csv (0.0.1)
     dorian-sort-json (0.5.0)
     dorian-sort-yaml (0.4.0)
     dorian-times (0.5.0)

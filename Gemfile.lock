@@ -85,9 +85,9 @@ GEM
       git
     dorian-commit (0.4.1)
       git
-    dorian-csv-all (0.0.1)
-      activesupport
+    dorian-csv-all (0.1.0)
       csv
+      dorian-to_struct
     dorian-csv-each (0.4.2)
       activesupport
       csv
@@ -99,7 +99,8 @@ GEM
     dorian-csv-pluck (0.0.1)
       activesupport
       csv
-    dorian-csv-uniq (0.0.1)
+    dorian-csv-uniq (0.1.0)
+      csv
     dorian-dir (0.5.0)
       git
     dorian-dir-and-self (0.3.0)
@@ -111,7 +112,8 @@ GEM
       git
     dorian-git-tree (0.5.0)
       git
-    dorian-json-all (0.0.1)
+    dorian-json-all (0.1.0)
+      dorian-to_struct
     dorian-json-compare (0.0.1)
     dorian-json-deep-each (0.0.1)
     dorian-json-deep-map (0.0.1)
@@ -134,8 +136,9 @@ GEM
     dorian-sort-json (0.5.0)
     dorian-sort-yaml (0.4.0)
     dorian-times (0.5.0)
+    dorian-to_struct (0.4.0)
     dorian-top (0.2.0)
-    dorian-write (0.0.1)
+    dorian-write (0.1.0)
     dorian-yaml-all (0.0.1)
     dorian-yaml-compare (0.4.0)
     dorian-yaml-deep-each (0.0.1)
@@ -196,7 +199,7 @@ GEM
       rubocop-ast (>= 1.31.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.32.0)
+    rubocop-ast (1.32.1)
       parser (>= 3.3.1.0)
     rubocop-minitest (0.35.1)
       rubocop (>= 1.61, < 2.0)

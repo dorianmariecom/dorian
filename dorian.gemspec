@@ -3,8 +3,8 @@
 Gem::Specification.new do |s|
   s.name = "dorian"
   s.version = "0.9.1"
-  s.summary = "A collection of gems"
-  s.description = "A collection of gems by Dorian Marié"
+  s.summary = "a collection of gems"
+  s.description = s.summary
   s.authors = ["Dorian Marié"]
   s.email = "dorian@dorianmarie.com"
   s.homepage = "https://github.com/dorianmariecom/dorian"

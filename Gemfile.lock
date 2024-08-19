@@ -76,79 +76,109 @@ GEM
     connection_pool (2.4.1)
     csv (3.3.0)
     diff-lcs (1.5.1)
-    dorian-all (0.7.0)
-    dorian-anonymize (0.2.0)
-    dorian-anonymize-json (0.2.0)
+    dorian-all (0.7.2)
+    dorian-anonymize (0.2.2)
+    dorian-anonymize-json (0.2.2)
       json
-    dorian-anonymize-yaml (0.2.0)
-    dorian-chat (0.0.1)
+    dorian-anonymize-yaml (0.2.2)
+    dorian-chat (0.0.2)
+    dorian-commit (0.4.2)
       git
-    dorian-commit (0.4.1)
-      git
-    dorian-csv-all (0.1.0)
+    dorian-csv-all (0.1.1)
       csv
       dorian-to_struct
-    dorian-csv-each (0.4.2)
-      activesupport
+    dorian-csv-each (0.4.3)
       csv
-    dorian-csv-map (0.0.1)
-      activesupport
-      csv
-    dorian-csv-merge (0.0.1)
-      csv
-    dorian-csv-pluck (0.0.1)
-      activesupport
-      csv
-    dorian-csv-uniq (0.1.0)
-      csv
-    dorian-dir (0.5.0)
-      git
-    dorian-dir-and-self (0.3.0)
-      git
-    dorian-dot (0.7.0)
-      git
-    dorian-each (0.4.0)
-    dorian-git-ls-ruby-files (0.2.0)
-      git
-    dorian-git-tree (0.5.0)
-      git
-    dorian-json-all (0.1.0)
       dorian-to_struct
-    dorian-json-compare (0.0.1)
-    dorian-json-deep-each (0.0.1)
-    dorian-json-deep-map (0.0.1)
-    dorian-json-deep-pluck (0.0.1)
-    dorian-json-each (0.0.1)
-    dorian-json-map (0.0.1)
-    dorian-json-pluck (0.0.1)
-    dorian-json-read-write (0.0.1)
-    dorian-json-uniq (0.0.1)
-    dorian-parallel (0.2.0)
+    dorian-csv-map (0.0.2)
+      csv
+      dorian-to_struct
+    dorian-csv-merge (0.0.2)
+      csv
+    dorian-csv-pluck (0.0.2)
+      csv
+      dorian-to_struct
+    dorian-csv-uniq (0.1.1)
+      csv
+    dorian-dir (0.5.1)
+      git
+    dorian-dir-and-self (0.3.1)
+      git
+    dorian-dot (0.7.3)
+      git
+    dorian-each (0.4.2)
+    dorian-git-ls-ruby-files (0.2.2)
+      git
+    dorian-git-tree (0.5.2)
+      git
+    dorian-json-all (0.1.1)
+      dorian-to_struct
+      json
+    dorian-json-compare (0.0.2)
+      json
+    dorian-json-deep-each (0.0.2)
+      dorian-to_struct
+      json
+    dorian-json-deep-map (0.0.2)
+      dorian-to_struct
+      json
+    dorian-json-deep-pluck (0.0.2)
+      json
+    dorian-json-each (0.0.2)
+      dorian-to_struct
+      json
+    dorian-json-map (0.0.2)
+      dorian-to_struct
+      json
+    dorian-json-pluck (0.0.2)
+      json
+    dorian-json-read-write (0.0.2)
+      json
+    dorian-json-uniq (0.0.2)
+      json
+    dorian-parallel (0.2.2)
       parallel
-    dorian-pretty (0.3.0)
+    dorian-pretty (0.3.2)
       git
       syntax_tree
-    dorian-release (0.2.0)
-    dorian-rename (0.0.1)
-    dorian-replace (0.5.0)
-    dorian-shuffle (0.5.0)
-    dorian-sort-csv (0.0.1)
-    dorian-sort-json (0.5.0)
-    dorian-sort-yaml (0.4.0)
-    dorian-times (0.5.0)
-    dorian-to_struct (0.4.0)
-    dorian-top (0.2.0)
-    dorian-write (0.1.0)
-    dorian-yaml-all (0.0.1)
-    dorian-yaml-compare (0.4.0)
-    dorian-yaml-deep-each (0.0.1)
-    dorian-yaml-deep-map (0.0.1)
-    dorian-yaml-deep-pluck (0.0.1)
-    dorian-yaml-each (0.0.1)
-    dorian-yaml-map (0.0.1)
-    dorian-yaml-pluck (0.0.1)
-    dorian-yaml-read-write (0.3.0)
-    dorian-yaml-uniq (0.0.1)
+    dorian-release (0.2.2)
+    dorian-rename (0.0.2)
+    dorian-replace (0.5.2)
+    dorian-shuffle (0.5.2)
+    dorian-sort-csv (0.0.2)
+      csv
+    dorian-sort-json (0.5.2)
+    dorian-sort-yaml (0.4.2)
+      yaml
+    dorian-times (0.5.2)
+    dorian-to_struct (0.5.0)
+    dorian-top (0.2.2)
+    dorian-write (0.1.1)
+    dorian-yaml-all (0.0.2)
+      dorian-to_struct
+      yaml
+    dorian-yaml-compare (0.4.2)
+      yaml
+    dorian-yaml-deep-each (0.0.2)
+      dorian-to_struct
+      yaml
+    dorian-yaml-deep-map (0.0.2)
+      dorian-to_struct
+      yaml
+    dorian-yaml-deep-pluck (0.0.2)
+      yaml
+    dorian-yaml-each (0.0.2)
+      dorian-to_struct
+      yaml
+    dorian-yaml-map (0.0.2)
+      dorian-to_struct
+      yaml
+    dorian-yaml-pluck (0.0.2)
+      yaml
+    dorian-yaml-read-write (0.3.2)
+      yaml
+    dorian-yaml-uniq (0.0.4)
+      yaml
     drb (2.2.1)
     git (2.1.1)
       activesupport (>= 5.0)
@@ -225,6 +255,7 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.5.0)
+    yaml (0.3.0)
 
 PLATFORMS
   arm64-darwin-23

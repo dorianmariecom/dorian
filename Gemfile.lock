@@ -91,7 +91,7 @@ GEM
       dorian-to_struct
     dorian-chat (0.0.3)
       dorian-arguments
-    dorian-commit (0.4.3)
+    dorian-commit (0.4.4)
       dorian-arguments
       git
     dorian-csv-all (0.1.2)

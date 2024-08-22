@@ -102,8 +102,9 @@ GEM
     dorian-csv-pluck (0.0.2)
       csv
       dorian-to_struct
-    dorian-csv-uniq (0.1.1)
+    dorian-csv-uniq (0.1.2)
       csv
+      dorian-arguments
     dorian-dir (0.5.1)
       git
     dorian-dir-and-self (0.3.1)

@@ -81,6 +81,10 @@ GEM
     dorian-anonymize-json (0.2.2)
       json
     dorian-anonymize-yaml (0.2.2)
+    dorian-arguments (0.3.1)
+      activesupport
+      bigdecimal
+      dorian-to_struct
     dorian-chat (0.0.2)
     dorian-commit (0.4.2)
       git
@@ -116,7 +120,8 @@ GEM
       json
     dorian-json-compare (0.0.2)
       json
-    dorian-json-deep-each (0.0.2)
+    dorian-json-deep-each (0.0.3)
+      dorian-arguments
       dorian-to_struct
       json
     dorian-json-deep-map (0.0.2)
@@ -132,7 +137,8 @@ GEM
       json
     dorian-json-pluck (0.0.2)
       json
-    dorian-json-read-write (0.0.2)
+    dorian-json-read-write (0.0.3)
+      dorian-arguments
       json
     dorian-json-uniq (0.0.2)
       json
@@ -144,7 +150,8 @@ GEM
     dorian-release (0.2.2)
     dorian-rename (0.0.2)
     dorian-replace (0.5.2)
-    dorian-shuffle (0.5.2)
+    dorian-shuffle (0.5.3)
+      dorian-arguments
     dorian-sort-csv (0.0.2)
       csv
     dorian-sort-json (0.5.2)
@@ -159,7 +166,8 @@ GEM
       yaml
     dorian-yaml-compare (0.4.2)
       yaml
-    dorian-yaml-deep-each (0.0.2)
+    dorian-yaml-deep-each (0.0.3)
+      dorian-arguments
       dorian-to_struct
       yaml
     dorian-yaml-deep-map (0.0.2)
@@ -170,14 +178,17 @@ GEM
     dorian-yaml-each (0.0.2)
       dorian-to_struct
       yaml
-    dorian-yaml-map (0.0.2)
+    dorian-yaml-map (0.0.3)
+      dorian-arguments
       dorian-to_struct
       yaml
     dorian-yaml-pluck (0.0.2)
       yaml
-    dorian-yaml-read-write (0.3.2)
+    dorian-yaml-read-write (0.3.3)
+      dorian-arguments
       yaml
-    dorian-yaml-uniq (0.0.4)
+    dorian-yaml-uniq (0.0.5)
+      dorian-arguments
       yaml
     drb (2.2.1)
     git (2.1.1)
@@ -203,7 +214,7 @@ GEM
     rainbow (3.1.1)
     rchardet (1.8.0)
     regexp_parser (2.9.2)
-    rexml (3.3.5)
+    rexml (3.3.6)
       strscan
     rspec (3.13.0)
       rspec-core (~> 3.13.0)

@@ -77,7 +77,8 @@ GEM
     csv (3.3.0)
     diff-lcs (1.5.1)
     dorian-all (0.7.2)
-    dorian-anonymize (0.2.2)
+    dorian-anonymize (0.2.3)
+      dorian-arguments
     dorian-anonymize-json (0.2.2)
       json
     dorian-anonymize-yaml (0.2.2)

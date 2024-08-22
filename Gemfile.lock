@@ -164,7 +164,8 @@ GEM
     dorian-yaml-all (0.0.2)
       dorian-to_struct
       yaml
-    dorian-yaml-compare (0.4.2)
+    dorian-yaml-compare (0.4.3)
+      dorian-arguments
       yaml
     dorian-yaml-deep-each (0.0.3)
       dorian-arguments

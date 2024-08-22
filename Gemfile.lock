@@ -140,7 +140,8 @@ GEM
     dorian-json-read-write (0.0.3)
       dorian-arguments
       json
-    dorian-json-uniq (0.0.2)
+    dorian-json-uniq (0.0.3)
+      dorian-arguments
       json
     dorian-parallel (0.2.2)
       parallel

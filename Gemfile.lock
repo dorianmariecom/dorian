@@ -76,113 +76,156 @@ GEM
     connection_pool (2.4.1)
     csv (3.3.0)
     diff-lcs (1.5.1)
-    dorian-all (0.7.2)
-    dorian-anonymize (0.2.2)
-    dorian-anonymize-json (0.2.2)
+    dorian-all (0.7.3)
+      dorian-arguments
+    dorian-anonymize (0.2.3)
+      dorian-arguments
+    dorian-anonymize-json (0.2.3)
+      dorian-arguments
       json
-    dorian-anonymize-yaml (0.2.2)
-    dorian-arguments (0.3.1)
+    dorian-anonymize-yaml (0.2.3)
+      dorian-arguments
+    dorian-arguments (0.3.2)
       activesupport
       bigdecimal
       dorian-to_struct
-    dorian-chat (0.0.2)
-    dorian-commit (0.4.2)
+    dorian-chat (0.0.3)
+      dorian-arguments
+    dorian-commit (0.4.3)
+      dorian-arguments
       git
-    dorian-csv-all (0.1.1)
+    dorian-csv-all (0.1.2)
       csv
+      dorian-arguments
       dorian-to_struct
-    dorian-csv-each (0.4.3)
+    dorian-csv-each (0.4.4)
       csv
+      dorian-arguments
       dorian-to_struct
-    dorian-csv-map (0.0.2)
+    dorian-csv-map (0.0.3)
       csv
+      dorian-arguments
       dorian-to_struct
-    dorian-csv-merge (0.0.2)
+    dorian-csv-merge (0.0.3)
       csv
-    dorian-csv-pluck (0.0.2)
+      dorian-arguments
+    dorian-csv-pluck (0.0.3)
       csv
+      dorian-arguments
       dorian-to_struct
-    dorian-csv-uniq (0.1.1)
+    dorian-csv-uniq (0.1.2)
       csv
-    dorian-dir (0.5.1)
+      dorian-arguments
+    dorian-dir (0.5.2)
+      dorian-arguments
       git
-    dorian-dir-and-self (0.3.1)
+    dorian-dir-and-self (0.3.2)
+      dorian-arguments
       git
-    dorian-dot (0.7.3)
+    dorian-dot (0.7.4)
+      dorian-arguments
       git
-    dorian-each (0.4.2)
-    dorian-git-ls-ruby-files (0.2.2)
+    dorian-each (0.4.3)
+      dorian-arguments
+    dorian-git-ls-ruby-files (0.2.3)
+      dorian-arguments
       git
-    dorian-git-tree (0.5.2)
+    dorian-git-tree (0.5.3)
+      dorian-arguments
       git
-    dorian-json-all (0.1.1)
+    dorian-json-all (0.1.2)
+      dorian-arguments
       dorian-to_struct
       json
-    dorian-json-compare (0.0.2)
+    dorian-json-compare (0.0.3)
+      dorian-arguments
       json
     dorian-json-deep-each (0.0.3)
       dorian-arguments
       dorian-to_struct
       json
-    dorian-json-deep-map (0.0.2)
+    dorian-json-deep-map (0.0.3)
+      dorian-arguments
       dorian-to_struct
       json
-    dorian-json-deep-pluck (0.0.2)
+    dorian-json-deep-pluck (0.0.3)
+      dorian-arguments
       json
-    dorian-json-each (0.0.2)
+    dorian-json-each (0.0.3)
+      dorian-arguments
       dorian-to_struct
       json
-    dorian-json-map (0.0.2)
+    dorian-json-map (0.0.3)
+      dorian-arguments
       dorian-to_struct
       json
-    dorian-json-pluck (0.0.2)
+    dorian-json-pluck (0.0.3)
+      dorian-arguments
       json
     dorian-json-read-write (0.0.3)
       dorian-arguments
       json
-    dorian-json-uniq (0.0.2)
+    dorian-json-uniq (0.0.3)
+      dorian-arguments
       json
-    dorian-parallel (0.2.2)
+    dorian-parallel (0.2.3)
+      dorian-arguments
       parallel
-    dorian-pretty (0.3.2)
+    dorian-pretty (0.3.3)
+      dorian-arguments
       git
       syntax_tree
-    dorian-release (0.2.2)
-    dorian-rename (0.0.2)
-    dorian-replace (0.5.2)
+    dorian-release (0.2.3)
+      dorian-arguments
+    dorian-rename (0.0.3)
+      dorian-arguments
+    dorian-replace (0.5.3)
+      dorian-arguments
     dorian-shuffle (0.5.3)
       dorian-arguments
-    dorian-sort-csv (0.0.2)
+    dorian-sort-csv (0.0.3)
       csv
-    dorian-sort-json (0.5.2)
-    dorian-sort-yaml (0.4.2)
+      dorian-arguments
+    dorian-sort-json (0.5.3)
+      dorian-arguments
+    dorian-sort-yaml (0.4.3)
+      dorian-arguments
       yaml
-    dorian-times (0.5.2)
-    dorian-to_struct (0.5.0)
-    dorian-top (0.2.2)
-    dorian-write (0.1.1)
-    dorian-yaml-all (0.0.2)
+    dorian-times (0.5.3)
+      dorian-arguments
+    dorian-to_struct (0.5.2)
+    dorian-top (0.2.3)
+      dorian-arguments
+    dorian-write (0.1.2)
+      dorian-arguments
+    dorian-yaml-all (0.0.3)
+      dorian-arguments
       dorian-to_struct
       yaml
-    dorian-yaml-compare (0.4.2)
+    dorian-yaml-compare (0.4.3)
+      dorian-arguments
       yaml
     dorian-yaml-deep-each (0.0.3)
       dorian-arguments
       dorian-to_struct
       yaml
-    dorian-yaml-deep-map (0.0.2)
+    dorian-yaml-deep-map (0.0.3)
+      dorian-arguments
       dorian-to_struct
       yaml
-    dorian-yaml-deep-pluck (0.0.2)
+    dorian-yaml-deep-pluck (0.0.3)
+      dorian-arguments
       yaml
-    dorian-yaml-each (0.0.2)
+    dorian-yaml-each (0.0.3)
+      dorian-arguments
       dorian-to_struct
       yaml
     dorian-yaml-map (0.0.3)
       dorian-arguments
       dorian-to_struct
       yaml
-    dorian-yaml-pluck (0.0.2)
+    dorian-yaml-pluck (0.0.3)
+      dorian-arguments
       yaml
     dorian-yaml-read-write (0.3.3)
       dorian-arguments

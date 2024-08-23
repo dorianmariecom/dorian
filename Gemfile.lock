@@ -85,7 +85,7 @@ GEM
       json
     dorian-anonymize-yaml (0.2.3)
       dorian-arguments
-    dorian-arguments (0.3.2)
+    dorian-arguments (0.4.0)
       activesupport
       bigdecimal
       dorian-to_struct

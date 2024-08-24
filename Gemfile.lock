@@ -193,7 +193,7 @@ GEM
       yaml
     dorian-times (0.5.3)
       dorian-arguments
-    dorian-to_struct (0.5.2)
+    dorian-to_struct (0.6.0)
     dorian-top (0.2.3)
       dorian-arguments
     dorian-write (0.1.2)

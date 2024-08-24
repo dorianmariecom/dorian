@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "dorian/arguments"
+
+parsed = Dorian::Arguments.parse(version: { alias: :v }, help: { alias: :h })
+
+if parsed.options.version
+  abort File.read(File.expand_path("../../VERSION", __FILE__))
+else
+  abort parsed.help
+end

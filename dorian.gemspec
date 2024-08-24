@@ -9,12 +9,14 @@ Gem::Specification.new do |s|
   s.email = "dorian@dorianmarie.com"
   s.homepage = "https://github.com/dorianmariecom/dorian"
   s.license = "MIT"
-  s.files = %w[LICENSE README.md dorian.gemspec]
+  s.files = %w[VERSION bin/dorian]
+  s.executables << "dorian"
 
   s.add_dependency "dorian-all"
   s.add_dependency "dorian-anonymize"
   s.add_dependency "dorian-anonymize-json"
   s.add_dependency "dorian-anonymize-yaml"
+  s.add_dependency "dorian-arguments"
   s.add_dependency "dorian-chat"
   s.add_dependency "dorian-commit"
   s.add_dependency "dorian-csv-all"
@@ -49,6 +51,7 @@ Gem::Specification.new do |s|
   s.add_dependency "dorian-sort-json"
   s.add_dependency "dorian-sort-yaml"
   s.add_dependency "dorian-times"
+  s.add_dependency "dorian-to_struct"
   s.add_dependency "dorian-top"
   s.add_dependency "dorian-write"
   s.add_dependency "dorian-yaml-all"

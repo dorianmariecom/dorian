@@ -87,7 +87,7 @@ GEM
       json
     dorian-anonymize-yaml (1.0.0)
       dorian-arguments
-    dorian-arguments (1.0.0)
+    dorian-arguments (1.0.1)
       activesupport
       bigdecimal
       dorian-to_struct
@@ -127,8 +127,11 @@ GEM
     dorian-dot (1.0.0)
       dorian-arguments
       git
-    dorian-each (1.0.0)
+    dorian-each (1.1.0)
       dorian-arguments
+      dorian-eval
+      dorian-progress
+    dorian-eval (1.0.0)
     dorian-git-ls-ruby-files (1.0.0)
       dorian-arguments
       git
@@ -170,13 +173,15 @@ GEM
     dorian-json-uniq (1.0.0)
       dorian-arguments
       json
-    dorian-parallel (1.0.0)
+    dorian-parallel (1.1.0)
       dorian-arguments
       parallel
     dorian-pretty (1.0.0)
       dorian-arguments
       git
       syntax_tree
+    dorian-progress (1.0.1)
+      ruby-progressbar
     dorian-release (1.0.0)
       dorian-arguments
     dorian-rename (1.0.0)

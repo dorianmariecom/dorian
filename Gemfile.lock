@@ -1,11 +1,12 @@
 PATH
   remote: .
   specs:
-    dorian (1.0.0)
+    dorian (1.0.1)
       dorian-all
       dorian-anonymize
       dorian-anonymize-json
       dorian-anonymize-yaml
+      dorian-arguments
       dorian-chat
       dorian-commit
       dorian-csv-all
@@ -40,6 +41,7 @@ PATH
       dorian-sort-json
       dorian-sort-yaml
       dorian-times
+      dorian-to_struct
       dorian-top
       dorian-write
       dorian-yaml-all

@@ -87,10 +87,8 @@ GEM
       json
     dorian-anonymize-yaml (1.0.0)
       dorian-arguments
-    dorian-arguments (1.0.1)
-      activesupport
+    dorian-arguments (1.1.0)
       bigdecimal
-      dorian-to_struct
     dorian-chat (1.0.0)
       dorian-arguments
     dorian-commit (1.0.0)
@@ -149,7 +147,7 @@ GEM
       dorian-arguments
       dorian-to_struct
       json
-    dorian-json-deep-map (1.0.0)
+    dorian-json-deep-map (1.1.0)
       dorian-arguments
       dorian-to_struct
       json
@@ -160,7 +158,7 @@ GEM
       dorian-arguments
       dorian-to_struct
       json
-    dorian-json-map (1.0.0)
+    dorian-json-map (1.1.0)
       dorian-arguments
       dorian-to_struct
       json
@@ -200,7 +198,7 @@ GEM
       yaml
     dorian-times (1.0.0)
       dorian-arguments
-    dorian-to_struct (1.0.1)
+    dorian-to_struct (1.1.0)
     dorian-top (1.0.0)
       dorian-arguments
     dorian-write (1.0.0)

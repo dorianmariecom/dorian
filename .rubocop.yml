@@ -5,6 +5,7 @@ AllCops:
     - vendor/**/*
     - "*/node_modules/**/*"
     - "*/vendor/**/*"
+  NewCops: enable
 require:
   - rubocop-gemfile
   - rubocop-rspec

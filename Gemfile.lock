@@ -130,7 +130,7 @@ GEM
       dorian-arguments
       dorian-eval
       dorian-progress
-    dorian-eval (1.0.0)
+    dorian-eval (1.1.0)
     dorian-git-ls-ruby-files (1.0.0)
       dorian-arguments
       git

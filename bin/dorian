@@ -6,7 +6,7 @@ require "dorian/arguments"
 parsed = Dorian::Arguments.parse(version: { alias: :v }, help: { alias: :h })
 
 if parsed.options.version
-  abort File.read(File.expand_path("../../VERSION", __FILE__))
+  abort File.read(File.expand_path("../VERSION", __dir__))
 else
   abort parsed.help
 end

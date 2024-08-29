@@ -90,7 +90,7 @@ GEM
       json
     dorian-anonymize-yaml (1.0.0)
       dorian-arguments
-    dorian-arguments (1.1.0)
+    dorian-arguments (1.1.1)
       bigdecimal
     dorian-chat (1.0.0)
       dorian-arguments

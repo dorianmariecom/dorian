@@ -1,28 +1,146 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "csv"
 require "dorian/arguments"
+require "dorian/eval"
+require "dorian/progress"
+require "json"
+require "yaml"
 
-parsed = Dorian::Arguments.parse(
-  colorize: { aliases: [:color, :c], default: true },
-  fast: { alias: :f },
-  input: { type: :string, default: :raw, alias: :i },
-  output: { type: :string, default: :raw, alias: :o },
-  parallel: { alias: :p },
-  rails: { alias: :r },
-  stderr: { alias: :err },
-  stdout: { alias: :out },
-  write: { alias: :w },
-  deep: :boolean,
-  debug: { alias: :d },
-  progress: :boolean,
-  progress_format: { alias: :pf },
-  version: { alias: :v },
-  help: { alias: :h }
-)
+def headers(input, index)
+  if PARSED.options.headers && index.zero? && input.respond_to?(:first) &&
+       input.first.respond_to?(:to_h)
+    input.first.to_h.keys
+  end
+end
 
-abort parsed.help if parsed.options.help
+PARSED =
+  Dorian::Arguments.parse(
+    colorize: {
+      aliases: %i[color c],
+      default: true
+    },
+    fast: {
+      alias: :f
+    },
+    input: {
+      type: :string,
+      default: :raw,
+      alias: :i
+    },
+    output: {
+      type: :string,
+      default: :raw,
+      alias: :o
+    },
+    parallel: {
+      alias: :p
+    },
+    rails: {
+      alias: :r
+    },
+    stderr: {
+      alias: :err
+    },
+    stdout: {
+      alias: :out
+    },
+    write: {
+      alias: :w
+    },
+    deep: :boolean,
+    debug: {
+      alias: :d
+    },
+    progress: :boolean,
+    headers: :boolean,
+    progress_format: {
+      alias: :pf
+    },
+    version: {
+      alias: :v
+    },
+    help: {
+      alias: :h
+    }
+  )
 
-if parsed.options.version
+abort PARSED.help if PARSED.options.help
+
+if PARSED.options.version
   abort File.read(File.expand_path("../VERSION", __dir__))
+end
+
+COMMAND, *PARSED.arguments = PARSED.arguments
+
+inputs =
+  if PARSED.arguments.none? && PARSED.files.none?
+    [$stdin.each_line.to_a.join]
+  else
+    PARSED.arguments + PARSED.files.map { |file| File.read(file) }
+  end
+
+case PARSED.options.input.to_sym
+when :raw
+when :csv
+  inputs =
+    inputs.map { |input| CSV.parse(input, headers: PARSED.options.headers) }
+when :json
+  inputs = inputs.map { |input| JSON.parse(input) }
+when :jsonl
+  inputs = inputs.map { |input| input.lines.map { |line| JSON.parse(line) } }
+when :ruby
+  inputs = inputs.map { |input| eval(input) }
+when :rubyl
+  inputs = inputs.map { |input| input.lines.map { |line| eval(line) } }
+when :yaml
+  inputs = inputs.map { |input| YAML.safe_load(input) }
+when :yamll
+  inputs =
+    inputs.map { |input| input.lines.map { |line| YAML.safe_load(line) } }
+else
+  abort "#{PARSED.options.input} not supported"
+end
+
+case COMMAND.to_sym
+when :after
+when :all
+when :anonymize
+when :before
+when :between
+when :compare
+when :each
+when :lstrip
+when :merge
+when :pluck
+when :puts
+when :read
+when :reject
+when :rstrip
+when :select
+when :sort
+when :strip
+when :table
+when :tally
+when :then
+when :uniq
+else
+  abort "#{COMMAND} not supported"
+end
+
+case PARSED.options.output.to_sym
+when :raw
+when :csv
+  inputs.each.with_index do |input, index|
+    puts(
+      CSV.generate(headers: headers(input, index)) do |output|
+        output << headers(input, index) if headers(input, index)
+
+        input.each { |row| output << row }
+      end
+    )
+  end
+else
+  abort "#{PARSED.options.input} not supported"
 end

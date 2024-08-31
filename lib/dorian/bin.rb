@@ -324,6 +324,7 @@ class Dorian
       stderr: stderr?,
       colorize: colorize?,
       rails: rails?,
+      fast: fast?,
       returns: false
     )
       Dorian::Eval.eval(
@@ -334,6 +335,7 @@ class Dorian
         stderr:,
         colorize:,
         rails:,
+        fast:,
         returns:
       )
     end

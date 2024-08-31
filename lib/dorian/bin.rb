@@ -309,18 +309,16 @@ class Dorian
       parallel? ? Parallel.map(collection, &) : collection.map(&)
     end
 
-    def evalutes_input(ruby)
-      YAML.safe_load(
-        evaluates(
-          ruby:,
-          it: nil,
-          debug: false,
-          stdout: false,
-          stderr: false,
-          colorize: false,
-          returns: :yaml
-        )
-      )
+    def evaluates_input(ruby)
+      evaluates(
+        ruby:,
+        it: nil,
+        debug: false,
+        stdout: false,
+        stderr: false,
+        colorize: false,
+        returns: :yaml
+      ).returned
     end
 
     def evaluates(

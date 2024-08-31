@@ -7,5 +7,5 @@ def sum_of_even_numbers(array)
 end
 
 numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-result = sum_of_even_numbers(numbers)
-puts "The sum of even numbers in the array is: #{result}"
+
+sum_of_even_numbers(numbers)

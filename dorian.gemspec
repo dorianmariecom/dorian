@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency "dorian-arguments"
   s.add_dependency "dorian-eval"
   s.add_dependency "dorian-progress"
+  s.add_dependency "dorian-to_struct"
   s.add_dependency "json"
   s.add_dependency "parallel"
   s.add_dependency "yaml"

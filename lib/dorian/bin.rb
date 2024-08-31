@@ -4,6 +4,7 @@ require "csv"
 require "dorian/arguments"
 require "dorian/eval"
 require "dorian/progress"
+require "dorian/to_struct"
 require "json"
 require "yaml"
 require "parallel"
@@ -15,24 +16,10 @@ class Dorian
     DEFAULT_IO = :raw
 
     IO = {
-      "c" => :csv,
       "csv" => :csv,
-      "j" => :json,
-      "jl" => :jsonl,
-      "js" => :json,
-      "jsl" => :jsonl,
       "json" => :json,
       "jsonl" => :jsonl,
-      "r" => :ruby,
       "raw" => :raw,
-      "rb" => :ruby,
-      "rbl" => :rubyl,
-      "rl" => :rubyl,
-      "ru" => :ruby,
-      "ruby" => :ruby,
-      "rubyl" => :rubyl,
-      "rul" => :rubyl,
-      "y" => :yaml,
       "yaml" => :yaml,
       "yml" => :yaml
     }.freeze
@@ -114,6 +101,8 @@ class Dorian
       case command&.to_sym
       when :read, nil
         command_read
+      when :each
+        command_each
       else
         abort "#{command} not supported"
       end
@@ -124,11 +113,20 @@ class Dorian
     end
 
     def command_read
-      each((stdin_files + files)) do |input|
+      each(stdin_files + files) do |input|
         outputs(reads(File.read(input)), file: input)
       end
 
-      each((stdin_arguments + arguments)) { |input| outputs(reads(input)) }
+      each(stdin_arguments) { |input| outputs(reads(input)) }
+    end
+
+    def command_each
+      each(read_stdin_files + read_files + stdin_arguments) do |input|
+        each(lines(reads(input))) do |line|
+          binding.irb
+          evaluates(arguments.join(" "), it: to_ruby(line))
+        end
+      end
     end
 
     def outputs(content, file: nil)
@@ -140,6 +138,8 @@ class Dorian
     end
 
     def to_output(content)
+      content = content.from_deep_struct
+
       case output
       when :csv
         CSV.generate(headers: headers_of(content)) do |csv|
@@ -168,20 +168,16 @@ class Dorian
       case input
       when :csv
         if headers?
-          map(CSV.parse(content, headers: true), &:to_h)
+          map(CSV.parse(content, headers: true), &:to_h).to_deep_struct
         else
           CSV.parse(content)
         end
       when :json
-        JSON.parse(content)
+        JSON.parse(content).to_deep_struct
       when :jsonl
-        map(content.lines) { |line| JSON.parse(line) }
+        map(content.lines) { |line| JSON.parse(line) }.to_deep_struct
       when :raw
         content
-      when :ruby
-        evaluates_input(content)
-      when :rubyl
-        map(content.lines) { |line| evaluates_input(line) }
       when :yaml
         YAML.safe_load(content)
       else
@@ -198,14 +194,22 @@ class Dorian
     end
 
     def stdin_files
-      return [] if files.any? || arguments.any?
+      return [] if files.any?
       return [] unless stdin == :files
 
-      read_stdin.map(&:strip)
+      read_stdin.map(&:rstrip)
+    end
+
+    def read_stdin_files
+      stdin_files.map { |file| File.read(file) }
+    end
+
+    def read_files
+      files.map { |file| File.read(file) }
     end
 
     def stdin_arguments
-      return [] if files.any? || arguments.any?
+      return [] if files.any?
       return [] if stdin == :files
 
       [read_stdin.join]
@@ -240,7 +244,7 @@ class Dorian
     end
 
     def io_from_files
-      IO.fetch(File.extname((stdin_files + files).first).delete("."), nil)
+      IO.fetch(File.extname((stdin_files + files).first || "").delete("."), nil)
     end
 
     def parallel?
@@ -309,27 +313,19 @@ class Dorian
       parallel? ? Parallel.map(collection, &) : collection.map(&)
     end
 
-    def evaluates_input(ruby)
-      evaluates(
-        ruby:,
-        it: nil,
-        debug: false,
-        stdout: false,
-        stderr: false,
-        colorize: false,
-        returns: :yaml
-      ).returned
+    def lines(input)
+      input.is_a?(String) ? input.lines.map(&:rstrip) : Array(input)
     end
 
     def evaluates(
-      ruby:,
-      it: ruby,
+      ruby,
+      it: nil,
       debug: debug?,
       stdout: stdout?,
       stderr: stderr?,
       colorize: colorize?,
       rails: rails?,
-      returns: nil
+      returns: false
     )
       Dorian::Eval.eval(
         ruby:,

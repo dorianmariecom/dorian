@@ -316,7 +316,6 @@ class Dorian
           it: nil,
           debug: false,
           stdout: false,
-          stdout: false,
           stderr: false,
           colorize: false,
           returns: :yaml

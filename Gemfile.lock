@@ -2,58 +2,13 @@ PATH
   remote: .
   specs:
     dorian (1.1.0)
-      dorian-all
-      dorian-anonymize
-      dorian-anonymize-json
-      dorian-anonymize-yaml
+      csv
       dorian-arguments
-      dorian-chat
-      dorian-commit
-      dorian-csv-all
-      dorian-csv-each
-      dorian-csv-map
-      dorian-csv-merge
-      dorian-csv-pluck
-      dorian-csv-uniq
-      dorian-dir
-      dorian-dir-and-self
-      dorian-dot
-      dorian-each
-      dorian-git-ls-ruby-files
-      dorian-git-tree
-      dorian-json-all
-      dorian-json-compare
-      dorian-json-deep-each
-      dorian-json-deep-map
-      dorian-json-deep-pluck
-      dorian-json-each
-      dorian-json-map
-      dorian-json-pluck
-      dorian-json-read-write
-      dorian-json-uniq
-      dorian-parallel
-      dorian-pretty
-      dorian-release
-      dorian-rename
-      dorian-replace
-      dorian-shuffle
-      dorian-sort-csv
-      dorian-sort-json
-      dorian-sort-yaml
-      dorian-times
-      dorian-to_struct
-      dorian-top
-      dorian-write
-      dorian-yaml-all
-      dorian-yaml-compare
-      dorian-yaml-deep-each
-      dorian-yaml-deep-map
-      dorian-yaml-deep-pluck
-      dorian-yaml-each
-      dorian-yaml-map
-      dorian-yaml-pluck
-      dorian-yaml-read-write
-      dorian-yaml-uniq
+      dorian-eval
+      dorian-progress
+      json
+      parallel
+      yaml
 
 GEM
   remote: https://rubygems.org/
@@ -69,8 +24,6 @@ GEM
       minitest (>= 5.1)
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
-    addressable (2.8.7)
-      public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.2)
     base64 (0.2.0)
     bigdecimal (3.1.8)
@@ -81,175 +34,13 @@ GEM
     connection_pool (2.4.1)
     csv (3.3.0)
     diff-lcs (1.5.1)
-    dorian-all (1.1.0)
-      dorian-arguments
-    dorian-anonymize (1.1.0)
-      dorian-arguments
-    dorian-anonymize-json (1.1.0)
-      dorian-arguments
-      json
-    dorian-anonymize-yaml (1.1.0)
-      dorian-arguments
     dorian-arguments (1.2.0)
       bigdecimal
-    dorian-chat (1.1.0)
-      dorian-arguments
-    dorian-commit (1.2.0)
-      dorian-arguments
-      git
-      tiktoken_ruby
-    dorian-csv-all (1.1.0)
-      csv
-      dorian-arguments
-      dorian-to_struct
-    dorian-csv-each (1.1.0)
-      csv
-      dorian-arguments
-      dorian-to_struct
-    dorian-csv-map (1.1.0)
-      csv
-      dorian-arguments
-      dorian-to_struct
-    dorian-csv-merge (1.1.0)
-      csv
-      dorian-arguments
-    dorian-csv-pluck (1.1.0)
-      csv
-      dorian-arguments
-      dorian-to_struct
-    dorian-csv-uniq (1.1.0)
-      csv
-      dorian-arguments
-    dorian-dir (1.1.0)
-      dorian-arguments
-      git
-    dorian-dir-and-self (1.1.0)
-      dorian-arguments
-      git
-    dorian-dot (1.1.0)
-      dorian-arguments
-      git
-    dorian-each (1.2.0)
-      dorian-arguments
-      dorian-eval
-      dorian-progress
-    dorian-eval (1.2.0)
-    dorian-git-ls-ruby-files (1.1.0)
-      dorian-arguments
-      git
-    dorian-git-tree (1.1.0)
-      dorian-arguments
-      git
-    dorian-json-all (1.1.0)
-      dorian-arguments
-      dorian-to_struct
-      json
-    dorian-json-compare (1.1.0)
-      dorian-arguments
-      json
-    dorian-json-deep-each (1.1.0)
-      dorian-arguments
-      dorian-to_struct
-      json
-    dorian-json-deep-map (1.2.0)
-      dorian-arguments
-      dorian-to_struct
-      json
-    dorian-json-deep-pluck (1.1.0)
-      dorian-arguments
-      json
-    dorian-json-each (1.1.0)
-      dorian-arguments
-      dorian-to_struct
-      json
-    dorian-json-map (1.2.0)
-      dorian-arguments
-      dorian-to_struct
-      json
-    dorian-json-pluck (1.1.0)
-      dorian-arguments
-      json
-    dorian-json-read-write (1.1.0)
-      dorian-arguments
-      json
-    dorian-json-uniq (1.1.0)
-      dorian-arguments
-      json
-    dorian-parallel (1.2.0)
-      dorian-arguments
-      dorian-eval
-      dorian-progress
-      parallel
-    dorian-pretty (1.1.0)
-      dorian-arguments
-      git
-      syntax_tree
+    dorian-eval (1.3.0)
+      yaml
     dorian-progress (1.1.0)
       ruby-progressbar
-    dorian-release (1.1.0)
-      dorian-arguments
-    dorian-rename (1.1.0)
-      dorian-arguments
-    dorian-replace (1.1.0)
-      dorian-arguments
-    dorian-shuffle (1.1.0)
-      dorian-arguments
-    dorian-sort-csv (1.1.0)
-      csv
-      dorian-arguments
-    dorian-sort-json (1.1.0)
-      dorian-arguments
-    dorian-sort-yaml (1.1.0)
-      dorian-arguments
-      yaml
-    dorian-times (1.1.0)
-      dorian-arguments
-    dorian-to_struct (1.2.0)
-    dorian-top (1.1.0)
-      dorian-arguments
-    dorian-write (1.1.0)
-      dorian-arguments
-    dorian-yaml-all (1.1.0)
-      dorian-arguments
-      dorian-to_struct
-      yaml
-    dorian-yaml-compare (1.1.0)
-      dorian-arguments
-      yaml
-    dorian-yaml-deep-each (1.1.0)
-      dorian-arguments
-      dorian-to_struct
-      yaml
-    dorian-yaml-deep-map (1.1.0)
-      dorian-arguments
-      dorian-to_struct
-      yaml
-    dorian-yaml-deep-pluck (1.1.0)
-      dorian-arguments
-      yaml
-    dorian-yaml-each (1.1.0)
-      dorian-arguments
-      dorian-to_struct
-      yaml
-    dorian-yaml-map (1.1.0)
-      dorian-arguments
-      dorian-to_struct
-      yaml
-    dorian-yaml-pluck (1.1.0)
-      dorian-arguments
-      yaml
-    dorian-yaml-read-write (1.1.0)
-      dorian-arguments
-      yaml
-    dorian-yaml-uniq (1.1.0)
-      dorian-arguments
-      yaml
     drb (2.2.1)
-    git (2.2.0)
-      activesupport (>= 5.0)
-      addressable (~> 2.8)
-      process_executer (~> 1.1)
-      rchardet (~> 1.8)
     i18n (1.14.5)
       concurrent-ruby (~> 1.0)
     json (2.7.2)
@@ -260,17 +51,10 @@ GEM
     parser (3.3.4.2)
       ast (~> 2.4.1)
       racc
-    prettier_print (1.2.1)
-    process_executer (1.1.0)
-    public_suffix (6.0.1)
     racc (1.8.1)
     rack (3.1.7)
     rainbow (3.1.1)
-    rb_sys (0.9.87)
-    rchardet (1.8.0)
     regexp_parser (2.9.2)
-    rexml (3.3.6)
-      strscan
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -284,15 +68,14 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.1)
-    rubocop (1.65.1)
+    rubocop (1.66.0)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.4, < 3.0)
-      rexml (>= 3.2.5, < 4.0)
-      rubocop-ast (>= 1.31.1, < 2.0)
+      rubocop-ast (>= 1.32.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.32.1)
@@ -318,14 +101,7 @@ GEM
       rubocop-rspec (~> 3, >= 3.0.1)
     ruby-progressbar (1.13.0)
     securerandom (0.3.1)
-    strscan (3.1.0)
-    syntax_tree (6.2.0)
-      prettier_print (>= 1.2.0)
     thor (1.3.2)
-    tiktoken_ruby (0.0.9)
-      rb_sys (= 0.9.87)
-    tiktoken_ruby (0.0.9-arm64-darwin)
-    tiktoken_ruby (0.0.9-x86_64-linux)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.5.0)

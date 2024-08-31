@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dorian (2.0.1)
+    dorian (2.0.2)
       csv
       dorian-arguments
       dorian-eval

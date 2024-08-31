@@ -123,8 +123,7 @@ class Dorian
     def command_each
       each(read_stdin_files + read_files + stdin_arguments) do |input|
         each(lines(reads(input))) do |line|
-          binding.irb
-          evaluates(arguments.join(" "), it: to_ruby(line))
+          evaluates(arguments.join(" "), it: line)
         end
       end
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "csv"
 require "dorian/arguments"
 require "dorian/eval"
@@ -32,8 +34,8 @@ class Dorian
       "rul" => :rubyl,
       "y" => :yaml,
       "yaml" => :yaml,
-      "yml" => :yaml,
-    }
+      "yml" => :yaml
+    }.freeze
 
     attr_reader :parsed, :command, :arguments
 
@@ -63,11 +65,11 @@ class Dorian
           },
           stderr: {
             alias: :err,
-            default: true,
+            default: true
           },
           stdout: {
             alias: :out,
-            default: true,
+            default: true
           },
           stdin: {
             type: :string,
@@ -86,7 +88,9 @@ class Dorian
           progress_format: {
             alias: :pf
           },
-          pretty: { default: true },
+          pretty: {
+            default: true
+          },
           io: :string,
           version: {
             alias: :v
@@ -124,9 +128,7 @@ class Dorian
         outputs(reads(File.read(input)), file: input)
       end
 
-      each((stdin_arguments + arguments)) do |input|
-        outputs(reads(input))
-      end
+      each((stdin_arguments + arguments)) { |input| outputs(reads(input)) }
     end
 
     def outputs(content, file: nil)
@@ -141,18 +143,12 @@ class Dorian
       case output
       when :csv
         CSV.generate(headers: headers_of(content)) do |csv|
-          if headers_of(content)
-            csv << headers_of(content)
-          end
+          csv << headers_of(content) if headers_of(content)
 
           each(content) { |row| csv << row }
         end
       when :json
-        if pretty?
-          JSON.pretty_generate(content)
-        else
-          content.to_json
-        end
+        pretty? ? JSON.pretty_generate(content) : content.to_json
       when :jsonl
         map(content, &:to_json).join("\n")
       when :raw
@@ -204,12 +200,14 @@ class Dorian
     def stdin_files
       return [] if files.any? || arguments.any?
       return [] unless stdin == :files
+
       read_stdin.map(&:strip)
     end
 
     def stdin_arguments
       return [] if files.any? || arguments.any?
       return [] if stdin == :files
+
       [read_stdin.join]
     end
 
@@ -242,7 +240,7 @@ class Dorian
     end
 
     def io_from_files
-      IO.fetch(File.extname((stdin_files + files).first).gsub(".", ""), nil)
+      IO.fetch(File.extname((stdin_files + files).first).delete("."), nil)
     end
 
     def parallel?
@@ -299,36 +297,31 @@ class Dorian
       return unless content.first
       return unless content.first.respond_to?(:to_h)
       return unless content.first.to_h.keys.any?
+
       content.first.to_h.keys
     end
 
-    def each(collection, &block)
-      if parallel?
-        Parallel.each(collection, &block)
-      else
-        collection.each(&block)
-      end
+    def each(collection, &)
+      parallel? ? Parallel.each(collection, &) : collection.each(&)
     end
 
-    def map(collection, &block)
-      if parallel?
-        Parallel.map(collection, &block)
-      else
-        collection.map(&block)
-      end
+    def map(collection, &)
+      parallel? ? Parallel.map(collection, &) : collection.map(&)
     end
 
     def evalutes_input(ruby)
-      YAML.safe_load(evaluates(
-        ruby:,
-        it: nil,
-        debug: false,
-        stdout: false
-        stdout: false,
-        stderr: false,
-        colorize: false,
-        returns: :yaml
-      ))
+      YAML.safe_load(
+        evaluates(
+          ruby:,
+          it: nil,
+          debug: false,
+          stdout: false,
+          stdout: false,
+          stderr: false,
+          colorize: false,
+          returns: :yaml
+        )
+      )
     end
 
     def evaluates(

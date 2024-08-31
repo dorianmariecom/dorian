@@ -167,7 +167,7 @@ class Dorian
       case input
       when :csv
         if headers?
-          map(CSV.parse(content, headers: true), &:to_h).to_deep_struct
+          CSV.parse(content, headers: true).map(&:to_h).to_deep_struct
         else
           CSV.parse(content)
         end

@@ -69,6 +69,93 @@ RSpec.describe "Dorian" do
       expect(`bin/dorian -p --output csv samples/books.json`).to include(
         books_first_line
       )
+      expect(`bin/dorian read samples/books.json`).to eq(books_pretty)
+      expect(`bin/dorian read -io raw samples/books.json`).to eq(books_original)
+      expect(
+        `bin/dorian read --input raw --output raw samples/books.json`
+      ).to eq(books_original)
+      expect(`bin/dorian read --pretty samples/books.json`).to eq(books_pretty)
+      expect(`bin/dorian read --pretty true samples/books.json`).to eq(
+        books_pretty
+      )
+      expect(`bin/dorian read --pretty false samples/books.json`).to eq(
+        books_ugly
+      )
+      expect(`bin/dorian read --input json samples/books.json`).to eq(
+        books_pretty
+      )
+      expect(`bin/dorian read --io json samples/books.json`).to eq(books_pretty)
+      expect(`bin/dorian read --output yaml samples/books.json`).to eq(
+        books_yaml
+      )
+      expect(`bin/dorian read --output csv samples/books.json`).to eq(books_csv)
+      expect(`bin/dorian read -p samples/books.json`).to eq(books_pretty)
+      expect(`bin/dorian read -p --pretty samples/books.json`).to eq(
+        books_pretty
+      )
+      expect(`bin/dorian read -p --pretty true samples/books.json`).to eq(
+        books_pretty
+      )
+      expect(`bin/dorian read -p --pretty false samples/books.json`).to eq(
+        books_ugly
+      )
+      expect(`bin/dorian read -p --input json samples/books.json`).to eq(
+        books_pretty
+      )
+      expect(`bin/dorian read -p --io json samples/books.json`).to eq(
+        books_pretty
+      )
+      expect(`bin/dorian read -p --output yaml samples/books.json`).to eq(
+        books_yaml
+      )
+      expect(`bin/dorian read -p --output csv samples/books.json`).to include(
+        books_headers
+      )
+      expect(`bin/dorian read -p --output csv samples/books.json`).to include(
+        books_first_line
+      )
+    end
+  end
+
+  describe "each" do
+    it "works" do
+      input = "echo [1, 2, 3]"
+      command = "bin/dorian each --io json"
+      input_command = "#{input} | #{command}"
+      expect(`#{input_command} "p it"`).to eq(<<~OUTPUT)
+      1
+      2
+      3
+      OUTPUT
+      expect(`#{input_command} -deep "p it"`).to eq(<<~OUTPUT)
+      [1, 2, 3]
+      1
+      2
+      3
+      OUTPUT
+      expect(`#{input_command} --debug "p it"`).to eq(<<~OUTPUT)
+      [1] 1
+      [2] 2
+      [3] 3
+      OUTPUT
+      expect(`#{input_command} -deep --debug "p it"`).to eq(<<~OUTPUT)
+      [[1, 2, 3]] [1, 2, 3]
+      [1] 1
+      [2] 2
+      [3] 3
+      OUTPUT
+      expect(`#{input_command} --stdout false "p it"`).to eq("")
+      expect(`#{input_command} --stdout false -deep "p it"`).to eq("")
+      expect(`#{input_command} --stdout false --debug "p it"`).to eq("")
+      expect(`#{input_command} --stdout false -deep --debug "p it"`).to eq("")
+      expect(`#{input_command} --parallel "p it"`).to include("1")
+      expect(`#{input_command} --parallel -deep "p it"`).to include("1")
+      expect(`#{input_command} --parallel --debug "p it"`).to include("[1] 1")
+      expect(`#{input_command} --parallel -deep --debug "p it"`).to include("[1] 1")
+      expect(`#{input_command} --parallel --stdout false "p it"`).to eq("")
+      expect(`#{input_command} --parallel --stdout false -deep "p it"`).to eq("")
+      expect(`#{input_command} --parallel --stdout false --debug "p it"`).to eq("")
+      expect(`#{input_command} --parallel --stdout false -deep --debug "p it"`).to eq("")
     end
   end
 end

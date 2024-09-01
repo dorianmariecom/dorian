@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
+require "active_support"
+require "active_support/core_ext/hash"
+require "active_support/core_ext/array"
 require "csv"
 require "dorian/arguments"
 require "dorian/eval"
 require "dorian/progress"
 require "dorian/to_struct"
 require "json"
-require "yaml"
 require "parallel"
+require "yaml"
 
 class Dorian
   class Bin
@@ -152,12 +155,8 @@ class Dorian
         map(content, &:to_json).join("\n")
       when :raw
         content
-      when :ruby
-        content.inspect
-      when :rubyl
-        map(content, &:inspect).join("\n")
       when :yaml
-        content.to_yaml
+        content.deep_stringify_keys.to_yaml
       else
         abort "#{output} not supported"
       end
@@ -178,7 +177,7 @@ class Dorian
       when :raw
         content
       when :yaml
-        YAML.safe_load(content)
+        YAML.safe_load(content).to_deep_struct
       else
         abort "#{input} not supported"
       end

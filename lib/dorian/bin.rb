@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "active_support"
-require "active_support/core_ext/hash"
-require "active_support/core_ext/array"
 require "csv"
 require "dorian/arguments"
 require "dorian/eval"
@@ -24,10 +21,12 @@ class Dorian
       "jsonl" => :jsonl,
       "raw" => :raw,
       "yaml" => :yaml,
-      "yml" => :yaml
+      "yml" => :yaml,
+      "yamll" => :yamll,
+      "ymll" => :yamll
     }.freeze
 
-    attr_reader :parsed, :command, :arguments
+    attr_reader :parsed, :command, :arguments, :ruby
 
     def initialize
       @parsed =
@@ -49,6 +48,15 @@ class Dorian
           },
           parallel: {
             alias: :p
+          },
+          parallel_type: {
+            alias: :pt,
+            type: :string,
+            default: :processes
+          },
+          n: {
+            type: :integer,
+            default: 100
           },
           rails: {
             alias: :r
@@ -76,7 +84,8 @@ class Dorian
           progress: :boolean,
           headers: :boolean,
           progress_format: {
-            alias: :pf
+            alias: :pf,
+            type: :string
           },
           pretty: {
             default: true
@@ -90,7 +99,9 @@ class Dorian
           }
         )
 
-      @command, *@arguments = parsed.arguments
+      @arguments = parsed.arguments
+      @command = arguments.first
+      @ruby = nil
     end
 
     def self.run(...)
@@ -102,12 +113,13 @@ class Dorian
       abort VERSION if version?
 
       case command&.to_sym
-      when :read, nil
-        command_read
       when :each
+        @command = arguments.delete("each")
+        @ruby = arguments.join(" ")
+        @arguments = []
         command_each
       else
-        abort "#{command} not supported"
+        command_read
       end
     end
 
@@ -120,13 +132,17 @@ class Dorian
         outputs(reads(File.read(input)), file: input)
       end
 
-      each(stdin_arguments) { |input| outputs(reads(input)) }
+      each(stdin_arguments + arguments) { |input| outputs(reads(input)) }
+    end
+
+    def everything
+      read_stdin_files + read_files + stdin_arguments + arguments
     end
 
     def command_each
-      each(read_stdin_files + read_files + stdin_arguments) do |input|
-        each(lines(reads(input))) do |line|
-          evaluates(arguments.join(" "), it: line)
+      each(everything) do |input|
+        each(lines(reads(input)), progress: true) do |line|
+          evaluates(ruby, it: line)
         end
       end
     end
@@ -147,18 +163,18 @@ class Dorian
         CSV.generate(headers: headers_of(content)) do |csv|
           csv << headers_of(content) if headers_of(content)
 
-          each(content) { |row| csv << row }
+          each(content, options: { in_threads: n }) { |row| csv << wrap(row) }
         end
       when :json
         pretty? ? JSON.pretty_generate(content) : content.to_json
-      when :jsonl
+      when :jsonl, :yamll
         map(content, &:to_json).join("\n")
       when :raw
         content
       when :yaml
-        content.deep_stringify_keys.to_yaml
+        content.to_yaml
       else
-        abort "#{output} not supported"
+        abort "#{output.inspect} not supported"
       end
     end
 
@@ -172,15 +188,19 @@ class Dorian
         end
       when :json
         JSON.parse(content).to_deep_struct
-      when :jsonl
+      when :jsonl, :yamll
         map(content.lines) { |line| JSON.parse(line) }.to_deep_struct
       when :raw
         content
       when :yaml
         YAML.safe_load(content).to_deep_struct
       else
-        abort "#{input} not supported"
+        abort "#{input.inspect} not supported"
       end
+    rescue JSON::ParserError => e
+      abort "invalid json: #{e.message}"
+    rescue Psych::SyntaxError => e
+      abort "invalid yaml: #{e.message}"
     end
 
     def pretty?
@@ -189,13 +209,15 @@ class Dorian
 
     def read_stdin
       @read_stdin ||= $stdin.each_line.to_a
+    rescue Interrupt
+      abort "interupt in read_stdin"
     end
 
     def stdin_files
-      return [] if files.any?
-      return [] unless stdin == :files
+      return [] if files.any? || arguments.any?
+      return [] if stdin != :files
 
-      read_stdin.map(&:rstrip)
+      map(read_stdin, &:rstrip)
     end
 
     def read_stdin_files
@@ -207,7 +229,7 @@ class Dorian
     end
 
     def stdin_arguments
-      return [] if files.any?
+      return [] if files.any? || arguments.any?
       return [] if stdin == :files
 
       [read_stdin.join]
@@ -215,6 +237,10 @@ class Dorian
 
     def stdin
       options.stdin.to_sym
+    end
+
+    def deep?
+      !!options.deep
     end
 
     def options
@@ -293,26 +319,110 @@ class Dorian
       parsed.help
     end
 
+    def n
+      options.n
+    end
+
+    def parallel_type
+      options.parallel_type&.to_sym
+    end
+
     def headers_of(content)
-      return unless headers?
       return unless content.respond_to?(:first)
       return unless content.first
       return unless content.first.respond_to?(:to_h)
       return unless content.first.to_h.keys.any?
 
       content.first.to_h.keys
+    rescue TypeError
+      nil
     end
 
-    def each(collection, &)
-      parallel? ? Parallel.each(collection, &) : collection.each(&)
+    def parallel_options
+      if parallel_type == :processes
+        { in_processes: n }
+      elsif parallel_type == :threads
+        { in_threads: n }
+      else
+        abort "#{parallel_type.inspect} not supported"
+      end
     end
 
-    def map(collection, &)
-      parallel? ? Parallel.map(collection, &) : collection.map(&)
+    def each(collection, options: parallel_options, progress: false, &)
+      collection = wrap(collection)
+      progress_bar = progress ? create_progress_bar(collection.size) : nil
+
+      if parallel?
+        Parallel.each(
+          collection,
+          **options,
+          finish: ->(*) { progress_bar&.increment },
+          &
+        )
+      else
+        collection.each do |element|
+          yield(element).tap { progress_bar&.increment }
+        end
+      end
+    end
+
+    def map(collection, options: parallel_options, progress: false, &)
+      collection = wrap(collection)
+      progress_bar = progress ? create_progress_bar(collection.size) : nil
+
+      if parallel?
+        Parallel.map(
+          collection,
+          **options,
+          finish: ->(*) { progress_bar&.increment },
+          &
+        )
+      else
+        collection.map do |element|
+          yield(element).tap { progress_bar&.increment }
+        end
+      end
     end
 
     def lines(input)
-      input.is_a?(String) ? input.lines.map(&:rstrip) : Array(input)
+      if input.is_a?(String)
+        input.lines.map(&:rstrip)
+      elsif deep?
+        deep_lines(input)
+      else
+        Array(input)
+      end
+    end
+
+    def deep_lines(input)
+      case input
+      when Array
+        [input.to_deep_struct] +
+          input.flat_map { |element| deep_lines(element) }
+      when Hash
+        [input.to_deep_struct] +
+          input.flat_map { |key, value| deep_lines([key, value]) }
+      when Struct
+        deep_lines(input.from_deep_struct).to_deep_struct
+      else
+        [input.to_deep_struct]
+      end
+    end
+
+    def wrap(ruby)
+      if ruby.is_a?(Hash)
+        ruby
+      elsif ruby.respond_to?(:to_a)
+        ruby.to_a
+      else
+        Array(ruby)
+      end
+    end
+
+    def create_progress_bar(total)
+      return unless progress?
+
+      Dorian::Progress.create(total:, format: progress_format)
     end
 
     def evaluates(

@@ -12,7 +12,6 @@ Gem::Specification.new do |s|
   s.files = %w[VERSION bin/dorian lib/dorian/bin.rb]
   s.executables << "dorian"
 
-  s.add_dependency "activesupport"
   s.add_dependency "csv"
   s.add_dependency "dorian-arguments"
   s.add_dependency "dorian-eval"

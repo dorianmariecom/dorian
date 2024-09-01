@@ -114,11 +114,14 @@ class Dorian
 
       case command&.to_sym
       when :each
-        @command = arguments.delete("each")
+        arguments.delete("each")
+        @command = :each
         @ruby = arguments.join(" ")
         @arguments = []
         command_each
       else
+        arguments.delete("read")
+        @command = :read
         command_read
       end
     end
@@ -160,11 +163,12 @@ class Dorian
 
       case output
       when :csv
-        CSV.generate(headers: headers_of(content)) do |csv|
-          csv << headers_of(content) if headers_of(content)
-
-          each(content, options: { in_threads: n }) { |row| csv << wrap(row) }
-        end
+        (headers_of(content) ? headers_of(content).to_csv : "") +
+          map(content) do |element|
+            CSV.generate(headers: headers_of(content)) do |csv|
+              csv << wrap(element)
+            end
+          end.join
       when :json
         pretty? ? JSON.pretty_generate(content) : content.to_json
       when :jsonl, :yamll

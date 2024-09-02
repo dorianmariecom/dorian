@@ -126,6 +126,90 @@ RSpec.describe "Dorian" do
     end
   end
 
+  describe "after" do
+    it "works" do
+      input = "cat samples/numbers.raw"
+      command = "bin/dorian after"
+      input_command = "#{input} | #{command}"
+      expect(`#{input_command} "it.to_i == 8"`).to eq(<<~OUTPUT)
+      8
+      9
+      10
+      OUTPUT
+      expect(`#{input_command} 7`).to eq(<<~OUTPUT)
+      8
+      9
+      10
+      OUTPUT
+    end
+  end
+
+  describe "before" do
+    it "works" do
+      input = "cat samples/numbers.raw"
+      command = "bin/dorian before"
+      input_command = "#{input} | #{command}"
+      expect(`#{input_command} "it.to_i == 3"`).to eq(<<~OUTPUT)
+      1
+      2
+      3
+      OUTPUT
+      expect(`#{input_command} 2`).to eq(<<~OUTPUT)
+      1
+      2
+      3
+      OUTPUT
+    end
+  end
+
+  describe "between" do
+    it "works" do
+      input = "cat samples/numbers.raw"
+      command = "bin/dorian between"
+      input_command = "#{input} | #{command}"
+      expect(`#{input_command} "it.to_i == 3" "it.to_i == 5"`).to eq(<<~OUTPUT)
+      3
+      4
+      5
+      OUTPUT
+      expect(`#{input_command} 2 4`).to eq(<<~OUTPUT)
+      3
+      4
+      5
+      OUTPUT
+    end
+  end
+
+  describe "select" do
+    it "works" do
+      input = "cat samples/numbers.raw"
+      command = "bin/dorian select"
+      input_command = "#{input} | #{command}"
+      expect(`#{input_command} "it.to_i.even?"`).to eq(<<~OUTPUT)
+      2
+      4
+      6
+      8
+      10
+      OUTPUT
+    end
+  end
+
+  describe "reject" do
+    it "works" do
+      input = "cat samples/numbers.raw"
+      command = "bin/dorian reject"
+      input_command = "#{input} | #{command}"
+      expect(`#{input_command} "it.to_i.even?"`).to eq(<<~OUTPUT)
+      1
+      3
+      5
+      7
+      9
+      OUTPUT
+    end
+  end
+
   describe "each" do
     it "works" do
       input = "echo [1, 2, 3]"

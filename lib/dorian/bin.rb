@@ -26,7 +26,7 @@ class Dorian
       "ymll" => :yamll
     }.freeze
 
-    attr_reader :parsed, :command, :arguments, :ruby
+    attr_reader :parsed, :command, :arguments, :ruby, :ruby_before, :ruby_after
 
     def initialize
       @parsed =
@@ -116,15 +116,39 @@ class Dorian
       when :each
         arguments.delete("each")
         @command = :each
-        @ruby = arguments.join(" ")
-        @arguments = []
+        @ruby = arguments.delete_at(0)
         command_each
       when :all
         arguments.delete("all")
         @command = :all
-        @ruby = arguments.join(" ")
-        @arguments = []
+        @ruby = arguments.delete_at(0)
         command_all
+      when :before
+        arguments.delete("before")
+        @command = :before
+        @ruby = arguments.delete_at(0)
+        command_before
+      when :after
+        arguments.delete("after")
+        @command = :after
+        @ruby = arguments.delete_at(0)
+        command_after
+      when :between
+        arguments.delete("between")
+        @command = :between
+        @ruby_after = arguments.delete_at(0)
+        @ruby_before = arguments.delete_at(0)
+        command_between
+      when :select
+        arguments.delete("select")
+        @command = :select
+        @ruby = arguments.delete_at(0)
+        command_select
+      when :reject
+        arguments.delete("reject")
+        @command = :reject
+        @ruby = arguments.delete_at(0)
+        command_reject
       else
         arguments.delete("read")
         @command = :read
@@ -150,15 +174,63 @@ class Dorian
 
     def command_each
       each(everything) do |input|
-        each(lines(reads(input)), progress: true) do |line|
-          evaluates(ruby, it: line)
-        end
+        each(lines(reads(input)), progress: true) { |line| evaluates(it: line) }
       end
     end
 
     def command_all
       each(everything, progress: true) do |input|
-        evaluates(ruby, it: reads(input))
+        evaluates(it: reads(input))
+      end
+    end
+
+    def command_select
+      each(stdin_files + files) do |input|
+        outputs(select(lines(reads(File.read(input)))), file: input)
+      end
+
+      each(stdin_arguments + arguments) do |input|
+        outputs(select(lines(reads(input))))
+      end
+    end
+
+    def command_reject
+      each(stdin_files + files) do |input|
+        outputs(reject(lines(reads(File.read(input)))), file: input)
+      end
+
+      each(stdin_arguments + arguments) do |input|
+        outputs(reject(lines(reads(input))))
+      end
+    end
+
+    def command_after
+      each(stdin_files + files) do |input|
+        outputs(after(lines(reads(File.read(input)))), file: input)
+      end
+
+      each(stdin_arguments + arguments) do |input|
+        outputs(after(lines(reads(input))))
+      end
+    end
+
+    def command_before
+      each(stdin_files + files) do |input|
+        outputs(before(reads(File.read(input))), file: input)
+      end
+
+      each(stdin_arguments + arguments) do |input|
+        outputs(before(lines(reads(input))))
+      end
+    end
+
+    def command_between
+      each(stdin_files + files) do |input|
+        outputs(between(lines(reads(File.read(input)))), file: input)
+      end
+
+      each(stdin_arguments + arguments) do |input|
+        outputs(between(lines(reads(input))))
       end
     end
 
@@ -441,8 +513,92 @@ class Dorian
       Dorian::Progress.create(total:, format: progress_format)
     end
 
+    def after(input, ruby: @ruby_after || @ruby)
+      if ruby.to_i.to_s == ruby
+        input[(ruby.to_i)..]
+      else
+        selected = false
+
+        input.select do |element|
+          selected = true if match?(element, ruby:)
+          selected
+        end
+      end
+    end
+
+    def before(input, ruby: @ruby_before || @ruby)
+      if ruby.to_i.to_s == ruby
+        input[..(ruby.to_i)]
+      else
+        selected = true
+
+        input.select do |element|
+          selected.tap do
+            selected = false if match?(element, ruby:)
+          end
+        end
+      end
+    end
+
+    def between(input, ruby_before: @ruby_before, ruby_after: @ruby_after)
+      if ruby_before.to_i.to_s == ruby_before && ruby_after.to_i.to_s == ruby_after
+        input[(ruby_after.to_i)..(ruby_before.to_i)]
+      else
+        selected = false
+
+        input.select do |element|
+          selected = true if match?(element, ruby: ruby_after)
+          selected.tap do
+            selected = false if match?(element, ruby: ruby_before)
+          end
+        end
+      end
+    end
+
+    def select(input)
+      lines = lines(input)
+      progress_bar = create_progress_bar(lines.size)
+
+      if parallel?
+        Parallel.select(
+          lines(input),
+          **options,
+          finish: ->(*) { progress_bar&.increment },
+        ) do |element|
+          match?(element)
+        end
+      else
+        lines.select do |element|
+          match?(element).tap { progress_bar&.increment }
+        end
+      end
+    end
+
+    def reject(input)
+      lines = lines(input)
+      progress_bar = create_progress_bar(lines.size)
+
+      if parallel?
+        Parallel.reject(
+          lines,
+          **options,
+          finish: ->(*) { progress_bar&.increment },
+        ) do |element|
+          match?(element)
+        end
+      else
+        lines.reject do |element|
+          match?(element).tap { progress_bar&.increment }
+        end
+      end
+    end
+
+    def match?(element, ruby: @ruby)
+      !!evaluates(ruby:, it: element, stdout: false, returns: true).returned
+    end
+
     def evaluates(
-      ruby,
+      ruby: @ruby,
       it: nil,
       debug: debug?,
       stdout: stdout?,

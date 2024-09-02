@@ -154,6 +154,10 @@ class Dorian
         @command = :tally
         @ruby = arguments.delete_at(0)
         command_tally
+      when :anonymize
+        arguments.delete("anonymize")
+        @command = :anonymize
+        command_anonymize
       else
         arguments.delete("read")
         @command = :read
@@ -185,13 +189,17 @@ class Dorian
 
     def command_tally
       each(everything) do |input|
-        outputs(JSON.pretty_generate(map(lines(reads(input)), progress: true) do |element|
-          if ruby.to_s.empty?
-            element
-          else
-            evaluates(it: element, returns: true, stdout: false).returned
-          end
-        end.tally))
+        outputs(
+          JSON.pretty_generate(
+            map(lines(reads(input)), progress: true) do |element|
+              if ruby.to_s.empty?
+                element
+              else
+                evaluates(it: element, returns: true, stdout: false).returned
+              end
+            end.tally
+          )
+        )
       end
     end
 
@@ -252,6 +260,16 @@ class Dorian
 
       each(stdin_arguments + arguments) do |input|
         outputs(between(lines(reads(input))))
+      end
+    end
+
+    def command_anonymize
+      each(stdin_files + files) do |input|
+        outputs(anonymize(reads(File.read(input))), file: input)
+      end
+
+      each(stdin_arguments + arguments) do |input|
+        outputs(anonymize(reads(input)))
       end
     end
 
@@ -493,7 +511,7 @@ class Dorian
       end
     end
 
-    def select(collection, options: parallel_options, progress: false, &)
+    def select(collection, progress: false, &)
       collection = wrap(collection)
       progress_bar = progress ? create_progress_bar(collection.size) : nil
 
@@ -502,7 +520,7 @@ class Dorian
       end
     end
 
-    def reject(collection, options: parallel_options, progress: false, &)
+    def reject(collection, progress: false, &)
       collection = wrap(collection)
       progress_bar = progress ? create_progress_bar(collection.size) : nil
 
@@ -590,6 +608,28 @@ class Dorian
             selected = false if match?(element, ruby: ruby_before)
           end
         end
+      end
+    end
+
+    def anonymize(input)
+      if input.is_a(String)
+        input.gsub(/[a-z]/, "a").gsub(/[A-Z]/, "A").gsub(/[0-9]/, "0")
+      elsif input.is_a?(Integer)
+        0
+      elsif input.is_a?(Float)
+        0.0
+      elsif input.is_a?(TrueClass) || input.is_a?(FalseClass)
+        false
+      elsif input.nil?
+        nil
+      elsif input.is_a?(Hash)
+        input.transform_values { |value| anonymize(value) }
+      elsif input.is_a?(Array)
+        input.map { |element| anonymize(element) }
+      elsif input.is_a?(Struct)
+        anonymize(input.from_deep_struct).to_deep_struct
+      else
+        raise "#{input.class.inspect} not supported"
       end
     end
 

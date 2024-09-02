@@ -176,8 +176,6 @@ class Dorian
       when :commit
         arguments.delete("commit")
         @command = :commit
-        @arguments =
-          ["simple, clear, short, lowercase commit message"] + @arguments
         command_commit
       else
         arguments.delete("read")
@@ -199,17 +197,19 @@ class Dorian
     end
 
     def command_commit
+      system_prompt = "simple, clear, short, lowercase commit message"
       prompt_1 = "for the following diff:"
       prompt_2 = "for the following git status:"
       prompt_3 = "for the following comment:"
 
       content_1 = short(`git diff --staged`)
       content_2 = short(`git status`)
-      content_3 = short(everything.join("\n"))
+      content_3 = short(arguments.join("\n"))
 
       abort "no staged files" if content_1.empty?
 
       messages = [
+        { role: :system, content: system_prompt },
         { role: :system, content: prompt_1 },
         { role: :user, content: content_1 },
         { role: :system, content: prompt_2 },

@@ -119,6 +119,12 @@ class Dorian
         @ruby = arguments.join(" ")
         @arguments = []
         command_each
+      when :all
+        arguments.delete("all")
+        @command = :all
+        @ruby = arguments.join(" ")
+        @arguments = []
+        command_all
       else
         arguments.delete("read")
         @command = :read
@@ -147,6 +153,12 @@ class Dorian
         each(lines(reads(input)), progress: true) do |line|
           evaluates(ruby, it: line)
         end
+      end
+    end
+
+    def command_all
+      each(everything, progress: true) do |input|
+        evaluates(ruby, it: reads(input))
       end
     end
 

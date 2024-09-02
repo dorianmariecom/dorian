@@ -117,6 +117,15 @@ RSpec.describe "Dorian" do
     end
   end
 
+  describe "all" do
+    it "works" do
+      input = "echo [1, 2, 3]"
+      command = "bin/dorian all --io json"
+      input_command = "#{input} | #{command}"
+      expect(`#{input_command} "p it.first"`).to eq("1\n")
+    end
+  end
+
   describe "each" do
     it "works" do
       input = "echo [1, 2, 3]"

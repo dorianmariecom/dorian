@@ -6,7 +6,9 @@ require "dorian/eval"
 require "dorian/progress"
 require "dorian/to_struct"
 require "json"
+require "net/http"
 require "parallel"
+require "uri"
 require "yaml"
 
 class Dorian
@@ -158,6 +160,18 @@ class Dorian
         arguments.delete("anonymize")
         @command = :anonymize
         command_anonymize
+      when :append
+        arguments.delete("append")
+        @command = :append
+        command_append
+      when :prepend
+        arguments.delete("prepend")
+        @command = :prepend
+        command_prepend
+      when :chat
+        arguments.delete("chat")
+        @command = :chat
+        command_chat
       else
         arguments.delete("read")
         @command = :read
@@ -169,6 +183,14 @@ class Dorian
       parsed.files
     end
 
+    def command_chat
+      puts completion(
+        token: token(".chat"),
+        model: "gpt-4o",
+        messages: [{ role: :user, content: everything.join("\n") }]
+      )
+    end
+
     def command_read
       each(stdin_files + files) do |input|
         outputs(reads(File.read(input)), file: input)
@@ -178,7 +200,7 @@ class Dorian
     end
 
     def everything
-      read_stdin_files + read_files + stdin_arguments + arguments
+      read_stdin_files + stdin_arguments + read_files + arguments
     end
 
     def command_each
@@ -205,6 +227,14 @@ class Dorian
 
     def command_all
       each(everything, progress: true) { |input| evaluates(it: reads(input)) }
+    end
+
+    def command_append
+      outputs(everything.map { |input| lines(reads(input)) }.inject(&:+))
+    end
+
+    def command_prepend
+      outputs(everything.reverse.map { |input| lines(reads(input)) }.inject(&:+))
     end
 
     def command_select
@@ -635,6 +665,50 @@ class Dorian
 
     def match?(element, ruby: @ruby)
       !!evaluates(ruby:, it: element, stdout: false, returns: true).returned
+    end
+
+    def token(file)
+      token_file = File.join(Dir.home, file)
+
+      if File.exist?(token_file)
+        token = File.read(token_file).strip
+      else
+        print "token: "
+        token = gets.strip
+        File.write(token_file, token)
+        puts "token written to #{token_file}"
+      end
+
+      token
+    end
+
+    def completion(token:, model:, messages:)
+      body = post(
+        "https://api.openai.com/v1/chat/completions",
+        headers: {
+          "Content-Type" => "application/json",
+          "Authorization" => "Bearer #{token}"
+        },
+        body: { model:, messages: }.to_json
+      )
+
+      json = JSON.parse(body)
+      output = json.dig("choices", 0, "message", "content")
+
+      if output
+        output.strip
+      else
+        abort JSON.pretty_generate(json)
+      end
+    end
+
+    def post(url, headers: {}, body: {})
+      uri = URI.parse(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      request = Net::HTTP::Post.new(uri.path, headers)
+      request.body = body
+      http.request(request).body
     end
 
     def evaluates(

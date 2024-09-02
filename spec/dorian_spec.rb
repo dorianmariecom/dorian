@@ -151,11 +151,19 @@ RSpec.describe "Dorian" do
       expect(`#{input_command} --parallel "p it"`).to include("1")
       expect(`#{input_command} --parallel -deep "p it"`).to include("1")
       expect(`#{input_command} --parallel --debug "p it"`).to include("[1] 1")
-      expect(`#{input_command} --parallel -deep --debug "p it"`).to include("[1] 1")
+      expect(`#{input_command} --parallel -deep --debug "p it"`).to include(
+        "[1] 1"
+      )
       expect(`#{input_command} --parallel --stdout false "p it"`).to eq("")
-      expect(`#{input_command} --parallel --stdout false -deep "p it"`).to eq("")
-      expect(`#{input_command} --parallel --stdout false --debug "p it"`).to eq("")
-      expect(`#{input_command} --parallel --stdout false -deep --debug "p it"`).to eq("")
+      expect(`#{input_command} --parallel --stdout false -deep "p it"`).to eq(
+        ""
+      )
+      expect(`#{input_command} --parallel --stdout false --debug "p it"`).to eq(
+        ""
+      )
+      expect(
+        `#{input_command} --parallel --stdout false -deep --debug "p it"`
+      ).to eq("")
     end
   end
 end

@@ -176,6 +176,8 @@ class Dorian
       when :commit
         arguments.delete("commit")
         @command = :commit
+        @arguments =
+          ["simple, clear, short, lowercase commit message"] + @arguments
         command_commit
       else
         arguments.delete("read")
@@ -197,28 +199,30 @@ class Dorian
     end
 
     def command_commit
-      prompt_1 = "simple, clear, short, lowercase commit message"
-      prompt_2 = "for the following diff:"
-      prompt_3 = "for the following git status:"
-      prompt_4 = "for the following comment:"
+      prompt_1 = "for the following diff:"
+      prompt_2 = "for the following git status:"
+      prompt_3 = "for the following comment:"
 
-      content_2 = `git diff --staged`.first(5_000)
-      content_3 = `git status`.first(5_000)
-      content_4 = everything.join("\n").first(5_000)
+      content_1 = short(`git diff --staged`)
+      content_2 = short(`git status`)
+      content_3 = short(everything.join("\n"))
+
+      abort "no staged files" if content_1.empty?
 
       messages = [
         { role: :system, content: prompt_1 },
+        { role: :user, content: content_1 },
         { role: :system, content: prompt_2 },
         { role: :user, content: content_2 },
         { role: :system, content: prompt_3 },
-        { role: :user, content: content_3 },
-        { role: :system, content: prompt_4 },
-        { role: :user, content: content_4 }
+        { role: :user, content: content_3 }
       ]
 
-      Git.open(".").commit(
-        completion(token: token(".commit"), model: "gpt-4o", messages: messages)
-      )
+      message = completion(token: token(".commit"), model: "gpt-4o", messages: messages)
+
+      Git.open(".").commit(message)
+
+      puts message
     end
 
     def command_read
@@ -742,6 +746,10 @@ class Dorian
       request = Net::HTTP::Post.new(uri.path, headers)
       request.body = body
       http.request(request).body
+    end
+
+    def short(string)
+      string[0..5000]
     end
 
     def encoder

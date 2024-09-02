@@ -612,7 +612,7 @@ class Dorian
     end
 
     def anonymize(input)
-      if input.is_a(String)
+      if input.is_a?(String)
         input.gsub(/[a-z]/, "a").gsub(/[A-Z]/, "A").gsub(/[0-9]/, "0")
       elsif input.is_a?(Integer)
         0

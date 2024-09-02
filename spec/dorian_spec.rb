@@ -180,6 +180,20 @@ RSpec.describe "Dorian" do
     end
   end
 
+  describe "tally" do
+    it "works" do
+      input = "cat samples/numbers.raw"
+      command = "bin/dorian tally"
+      input_command = "#{input} | #{command}"
+      expect(`#{input_command} "it.to_i > 2"`).to eq(<<~OUTPUT)
+      {
+        "false": 2,
+        "true": 8
+      }
+      OUTPUT
+    end
+  end
+
   describe "select" do
     it "works" do
       input = "cat samples/numbers.raw"

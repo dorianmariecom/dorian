@@ -149,6 +149,11 @@ class Dorian
         @command = :reject
         @ruby = arguments.delete_at(0)
         command_reject
+      when :tally
+        arguments.delete("tally")
+        @command = :tally
+        @ruby = arguments.delete_at(0)
+        command_tally
       else
         arguments.delete("read")
         @command = :read
@@ -178,29 +183,45 @@ class Dorian
       end
     end
 
-    def command_all
-      each(everything, progress: true) do |input|
-        evaluates(it: reads(input))
+    def command_tally
+      each(everything) do |input|
+        outputs(JSON.pretty_generate(map(lines(reads(input)), progress: true) do |element|
+          if ruby.to_s.empty?
+            element
+          else
+            evaluates(it: element, returns: true, stdout: false).returned
+          end
+        end.tally))
       end
+    end
+
+    def command_all
+      each(everything, progress: true) { |input| evaluates(it: reads(input)) }
     end
 
     def command_select
       each(stdin_files + files) do |input|
-        outputs(select(lines(reads(File.read(input)))), file: input)
+        outputs(
+          select(lines(reads(File.read(input)))) { |element| match?(element) },
+          file: input
+        )
       end
 
       each(stdin_arguments + arguments) do |input|
-        outputs(select(lines(reads(input))))
+        outputs(select(lines(reads(input))) { |element| match?(element) })
       end
     end
 
     def command_reject
       each(stdin_files + files) do |input|
-        outputs(reject(lines(reads(File.read(input)))), file: input)
+        outputs(
+          reject(lines(reads(File.read(input)))) { |element| match?(element) },
+          file: input
+        )
       end
 
       each(stdin_arguments + arguments) do |input|
-        outputs(reject(lines(reads(input))))
+        outputs(reject(lines(reads(input))) { |element| match?(element) })
       end
     end
 
@@ -472,6 +493,24 @@ class Dorian
       end
     end
 
+    def select(collection, options: parallel_options, progress: false, &)
+      collection = wrap(collection)
+      progress_bar = progress ? create_progress_bar(collection.size) : nil
+
+      collection.select do |element|
+        yield(element).tap { progress_bar&.increment }
+      end
+    end
+
+    def reject(collection, options: parallel_options, progress: false, &)
+      collection = wrap(collection)
+      progress_bar = progress ? create_progress_bar(collection.size) : nil
+
+      collection.reject do |element|
+        yield(element).tap { progress_bar&.increment }
+      end
+    end
+
     def lines(input)
       if input.is_a?(String)
         input.lines.map(&:rstrip)
@@ -533,15 +572,14 @@ class Dorian
         selected = true
 
         input.select do |element|
-          selected.tap do
-            selected = false if match?(element, ruby:)
-          end
+          selected.tap { selected = false if match?(element, ruby:) }
         end
       end
     end
 
     def between(input, ruby_before: @ruby_before, ruby_after: @ruby_after)
-      if ruby_before.to_i.to_s == ruby_before && ruby_after.to_i.to_s == ruby_after
+      if ruby_before.to_i.to_s == ruby_before &&
+           ruby_after.to_i.to_s == ruby_after
         input[(ruby_after.to_i)..(ruby_before.to_i)]
       else
         selected = false
@@ -551,44 +589,6 @@ class Dorian
           selected.tap do
             selected = false if match?(element, ruby: ruby_before)
           end
-        end
-      end
-    end
-
-    def select(input)
-      lines = lines(input)
-      progress_bar = create_progress_bar(lines.size)
-
-      if parallel?
-        Parallel.select(
-          lines(input),
-          **options,
-          finish: ->(*) { progress_bar&.increment },
-        ) do |element|
-          match?(element)
-        end
-      else
-        lines.select do |element|
-          match?(element).tap { progress_bar&.increment }
-        end
-      end
-    end
-
-    def reject(input)
-      lines = lines(input)
-      progress_bar = create_progress_bar(lines.size)
-
-      if parallel?
-        Parallel.reject(
-          lines,
-          **options,
-          finish: ->(*) { progress_bar&.increment },
-        ) do |element|
-          match?(element)
-        end
-      else
-        lines.reject do |element|
-          match?(element).tap { progress_bar&.increment }
         end
       end
     end

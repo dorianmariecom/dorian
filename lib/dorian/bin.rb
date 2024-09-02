@@ -5,6 +5,7 @@ require "dorian/arguments"
 require "dorian/eval"
 require "dorian/progress"
 require "dorian/to_struct"
+require "git"
 require "json"
 require "net/http"
 require "parallel"
@@ -172,6 +173,10 @@ class Dorian
         arguments.delete("chat")
         @command = :chat
         command_chat
+      when :commit
+        arguments.delete("commit")
+        @command = :commit
+        command_commit
       else
         arguments.delete("read")
         @command = :read
@@ -185,9 +190,34 @@ class Dorian
 
     def command_chat
       puts completion(
-        token: token(".chat"),
-        model: "gpt-4o",
-        messages: [{ role: :user, content: everything.join("\n") }]
+             token: token(".chat"),
+             model: "gpt-4o",
+             messages: [{ role: :user, content: everything.join("\n") }]
+           )
+    end
+
+    def command_commit
+      prompt_1 = "simple, clear, short, lowercase commit message"
+      prompt_2 = "for the following diff:"
+      prompt_3 = "for the following git status:"
+      prompt_4 = "for the following comment:"
+
+      content_2 = `git diff --staged`.first(5_000)
+      content_3 = `git status`.first(5_000)
+      content_4 = everything.join("\n").first(5_000)
+
+      messages = [
+        { role: :system, content: prompt_1 },
+        { role: :system, content: prompt_2 },
+        { role: :user, content: content_2 },
+        { role: :system, content: prompt_3 },
+        { role: :user, content: content_3 },
+        { role: :system, content: prompt_4 },
+        { role: :user, content: content_4 }
+      ]
+
+      Git.open(".").commit(
+        completion(token: token(".commit"), model: "gpt-4o", messages: messages)
       )
     end
 
@@ -234,7 +264,9 @@ class Dorian
     end
 
     def command_prepend
-      outputs(everything.reverse.map { |input| lines(reads(input)) }.inject(&:+))
+      outputs(
+        everything.reverse.map { |input| lines(reads(input)) }.inject(&:+)
+      )
     end
 
     def command_select
@@ -683,14 +715,15 @@ class Dorian
     end
 
     def completion(token:, model:, messages:)
-      body = post(
-        "https://api.openai.com/v1/chat/completions",
-        headers: {
-          "Content-Type" => "application/json",
-          "Authorization" => "Bearer #{token}"
-        },
-        body: { model:, messages: }.to_json
-      )
+      body =
+        post(
+          "https://api.openai.com/v1/chat/completions",
+          headers: {
+            "Content-Type" => "application/json",
+            "Authorization" => "Bearer #{token}"
+          },
+          body: { model:, messages: }.to_json
+        )
 
       json = JSON.parse(body)
       output = json.dig("choices", 0, "message", "content")
@@ -709,6 +742,10 @@ class Dorian
       request = Net::HTTP::Post.new(uri.path, headers)
       request.body = body
       http.request(request).body
+    end
+
+    def encoder
+      Tiktoken.encoding_for_model("gpt-4o")
     end
 
     def evaluates(

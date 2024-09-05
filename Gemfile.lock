@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dorian (2.2.0)
+    dorian (2.2.1)
       csv
       dorian-arguments
       dorian-eval
@@ -38,13 +38,12 @@ GEM
     connection_pool (2.4.1)
     csv (3.3.0)
     diff-lcs (1.5.1)
-    dorian-arguments (1.2.0)
+    dorian-arguments (1.1.0)
       bigdecimal
-    dorian-eval (1.4.1)
-      yaml
-    dorian-progress (1.1.0)
+    dorian-eval (1.1.0)
+    dorian-progress (1.0.1)
       ruby-progressbar
-    dorian-to_struct (2.0.0)
+    dorian-to_struct (1.1.0)
     drb (2.2.1)
     git (2.3.0)
       activesupport (>= 5.0)
@@ -138,7 +137,7 @@ DEPENDENCIES
   rubocop-rspec_rails
 
 RUBY VERSION
-   ruby 3.3.4p94
+   ruby 3.3.5p100
 
 BUNDLED WITH
    2.5.18

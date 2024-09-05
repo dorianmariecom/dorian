@@ -38,13 +38,13 @@ GEM
     connection_pool (2.4.1)
     csv (3.3.0)
     diff-lcs (1.5.1)
-    dorian-arguments (1.2.1)
+    dorian-arguments (1.2.2)
       bigdecimal
-    dorian-eval (1.4.2)
+    dorian-eval (1.4.3)
       yaml
-    dorian-progress (1.1.1)
+    dorian-progress (1.1.2)
       ruby-progressbar
-    dorian-to_struct (2.0.1)
+    dorian-to_struct (2.0.2)
     drb (2.2.1)
     git (2.3.0)
       activesupport (>= 5.0)

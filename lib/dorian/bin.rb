@@ -260,7 +260,9 @@ class Dorian
     end
 
     def command_all
-      each(everything, progress: true) { |input| evaluates(it: lines(reads(input))) }
+      each(everything, progress: true) do |input|
+        evaluates(it: lines(reads(input)))
+      end
     end
 
     def command_append

@@ -218,7 +218,7 @@ class Dorian
         { role: :user, content: content_3 }
       ]
 
-      message = completion(token: token(".commit"), model: "gpt-4o", messages: messages)
+      message = completion(token: token(".commit"), model: "gpt-4o", messages:)
 
       Git.open(".").commit(message)
 
@@ -264,13 +264,11 @@ class Dorian
     end
 
     def command_append
-      outputs(everything.map { |input| lines(reads(input)) }.inject(&:+))
+      outputs(everything.sum { |input| lines(reads(input)) })
     end
 
     def command_prepend
-      outputs(
-        everything.reverse.map { |input| lines(reads(input)) }.inject(&:+)
-      )
+      outputs(everything.reverse.sum { |input| lines(reads(input)) })
     end
 
     def command_select

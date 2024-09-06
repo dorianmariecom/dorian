@@ -98,6 +98,7 @@ class Dorian
             default: true
           },
           io: :string,
+          self: :boolean,
           version: {
             alias: :v
           },
@@ -185,6 +186,14 @@ class Dorian
         arguments.delete("compare")
         @command = :compare
         command_compare
+      when :dir
+        arguments.delete("dir")
+        @command = :dir
+        command_dir
+      when :submodules
+        arguments.delete("submodules")
+        @command = :submodules
+        command_submodules
       else
         arguments.delete("read")
         @command = :read
@@ -243,6 +252,36 @@ class Dorian
 
     def everything
       read_stdin_files + stdin_arguments + read_files + arguments
+    end
+
+    def command_dir
+      puts(
+        Git
+          .open(".")
+          .ls_files
+          .map(&:first)
+          .map { |path| path.split("/").first }
+          .select { |path| Dir.exist?(path) }
+          .reject { |path| path.start_with?(".") }
+          .sort
+          .uniq
+      )
+
+      puts "." if self?
+    end
+
+    def command_submodules
+      puts(
+        File.read(".gitmodules").lines.grep(/path = /).map do |path|
+          path.split("=").last.strip
+        end
+      )
+
+      puts "." if self?
+    end
+
+    def self?
+      !!options.self
     end
 
     def command_compare

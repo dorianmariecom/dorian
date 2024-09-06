@@ -19,9 +19,9 @@ Gem::Specification.new do |s|
   s.add_dependency "dorian-to_struct"
   s.add_dependency "git"
   s.add_dependency "json"
+  s.add_dependency "ostruct"
   s.add_dependency "parallel"
   s.add_dependency "yaml"
-  s.add_dependency "ostruct"
 
   s.metadata = { "rubygems_mfa_required" => "true" }
   s.required_ruby_version = ">= 3.3"

@@ -87,7 +87,9 @@ class Dorian
             alias: :d
           },
           progress: :boolean,
-          headers: { default: true },
+          headers: {
+            default: true
+          },
           progress_format: {
             alias: :pf,
             type: :string

@@ -227,7 +227,7 @@ RSpec.describe "Dorian" do
   describe "each" do
     it "works" do
       input = "echo [1, 2, 3]"
-      command = "bin/dorian each --io json"
+      command = "bin/dorian each --io json --parallel false --fast false"
       input_command = "#{input} | #{command}"
       expect(`#{input_command} "p it"`).to eq(<<~OUTPUT)
       1

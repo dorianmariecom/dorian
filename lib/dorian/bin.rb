@@ -39,7 +39,8 @@ class Dorian
             default: true
           },
           fast: {
-            alias: :f
+            alias: :f,
+            default: true
           },
           input: {
             type: :string,
@@ -50,7 +51,8 @@ class Dorian
             alias: :o
           },
           parallel: {
-            alias: :p
+            alias: :p,
+            default: true
           },
           parallel_type: {
             alias: :pt,
@@ -85,7 +87,7 @@ class Dorian
             alias: :d
           },
           progress: :boolean,
-          headers: :boolean,
+          headers: { default: true },
           progress_format: {
             alias: :pf,
             type: :string

@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency "json"
   s.add_dependency "parallel"
   s.add_dependency "yaml"
+  s.add_dependency "ostruct"
 
   s.metadata = { "rubygems_mfa_required" => "true" }
   s.required_ruby_version = ">= 3.3"

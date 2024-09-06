@@ -181,6 +181,10 @@ class Dorian
         arguments.delete("commit")
         @command = :commit
         command_commit
+      when :compare
+        arguments.delete("compare")
+        @command = :compare
+        command_compare
       else
         arguments.delete("read")
         @command = :read
@@ -239,6 +243,24 @@ class Dorian
 
     def everything
       read_stdin_files + stdin_arguments + read_files + arguments
+    end
+
+    def command_compare
+      file_1, file_2 = files
+      key_1, key_2 = arguments
+      read_1, read_2 = files.map.with_index do |file, index|
+        read = reads(File.read(file))
+
+        if arguments[index] && read.from_deep_struct.has_key?(arguments[index])
+          read[arguments[index]]
+        elsif arguments[index]
+          nil
+        else
+          read
+        end
+      end
+
+      compare(read_1, read_2, file_1:, file_2:)
     end
 
     def command_each
@@ -750,6 +772,55 @@ class Dorian
       request = Net::HTTP::Post.new(uri.path, headers)
       request.body = body
       http.request(request).body
+    end
+
+    def compare(content_1, content_2, path: ".", file_1:, file_2:)
+      content_1 = content_1.from_deep_struct
+      content_2 = content_2.from_deep_struct
+
+      if content_1.is_a?(Hash) && content_2.is_a?(Hash)
+        (content_1.keys + content_2.keys).uniq.each do |key|
+          new_path = path == "." ? "#{path}#{key}" : "#{path}.#{key}"
+
+          if content_1[key] && !content_2[key]
+            warn "#{new_path} present in #{file_1} but not in #{file_2}"
+            next
+          elsif !content_1[key] && content_2[key]
+            warn "#{new_path} present in #{file_2} but not in #{file_1}"
+            next
+          end
+
+          compare(
+            content_1[key], content_2[key],
+            path: new_path,
+            file_1:,
+            file_2:
+          )
+        end
+      elsif content_1.is_a?(Array) && content_2.is_a?(Array)
+        (0...([content_1.size, content_2.size].max)).each do |index|
+          new_path = "#{path}[#{index}]"
+          if content_1[index] && !content_2[index]
+            warn "#{new_path} present in #{file_1} but not in #{file_2}"
+            next
+          elsif !content_1[index] && content_2[index]
+            warn "#{new_path} present in #{file_2} but not in #{file_1}"
+            next
+          end
+
+          compare(
+            content_1[index], content_2[index],
+            path: new_path,
+            file_1:,
+            file_2:
+          )
+        end
+      elsif content_1.class != content_2.class
+        warn(
+          "#{path} has #{content_1.class} for #{file_1} " \
+            "and #{content_2.class} for #{file_2}"
+        )
+      end
     end
 
     def short(string)

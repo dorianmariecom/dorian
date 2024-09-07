@@ -202,6 +202,10 @@ class Dorian
         arguments.delete("eval")
         @command = :eval
         command_eval
+      when :ls
+        arguments.delete("ls")
+        @command = :ls
+        command_ls
       else
         arguments.delete("read")
         @command = :read
@@ -275,6 +279,22 @@ class Dorian
           .map { |path| path.split("/").first }
           .select { |path| Dir.exist?(path) }
           .reject { |path| path.start_with?(".") }
+          .sort
+          .uniq
+      )
+
+      puts "." if self?
+    end
+
+    def command_ls
+      puts(
+        Git
+          .open(".")
+          .ls_files
+          .map(&:first)
+          .map { |path| path.split("/").first }
+          .reject { |path| path.start_with?(".") }
+          .select { |path| match_filetypes?(path) }
           .sort
           .uniq
       )
@@ -912,6 +932,79 @@ class Dorian
 
     def encoder
       Tiktoken.encoding_for_model("gpt-4o")
+    end
+
+    def match_filetypes?(path)
+      return true unless arguments.any?
+      return true unless arguments.intersect?(["rb", "ruby"])
+
+      ruby_extensions = %w[
+        .rb
+        .arb
+        .axlsx
+        .builder
+        .fcgi
+        .gemfile
+        .gemspec
+        .god
+        .jb
+        .jbuilder
+        .mspec
+        .opal
+        .pluginspec
+        .podspec
+        .rabl
+        .rake
+        .rbuild
+        .rbw
+        .rbx
+        .ru
+        .ruby
+        .schema
+        .spec
+        .thor
+        .watchr
+      ]
+
+      ruby_filenames = %w[
+        .irbrc
+        .pryrc
+        .simplecov
+        Appraisals
+        Berksfile
+        Brewfile
+        Buildfile
+        Capfile
+        Cheffile
+        Dangerfile
+        Deliverfile
+        Fastfile
+        Gemfile
+        Guardfile
+        Jarfile
+        Mavenfile
+        Podfile
+        Puppetfile
+        Rakefile
+        rakefile
+        Schemafile
+        Snapfile
+        Steepfile
+        Thorfile
+        Vagabondfile
+        Vagrantfile
+        buildfile
+      ]
+
+      return false if Dir.exist?(path)
+      return true if ruby_filenames.include?(path)
+      return true if ruby_extensions.include?(File.extname(path))
+      return false unless File.exist?(path)
+
+      first_line =
+        File.open(path, &:gets).to_s.encode("UTF-8", invalid: :replace)
+
+      /\A#!.*ruby\z/.match?(first_line)
     end
 
     def evaluates(

@@ -194,6 +194,14 @@ class Dorian
         arguments.delete("submodules")
         @command = :submodules
         command_submodules
+      when :dot
+        arguments.delete("dot")
+        @command = :dot
+        command_dot
+      when :eval
+        arguments.delete("eval")
+        @command = :eval
+        command_eval
       else
         arguments.delete("read")
         @command = :read
@@ -203,6 +211,10 @@ class Dorian
 
     def files
       parsed.files
+    end
+
+    def command_eval
+      each(everything) { |thing| outputs(evaluates(ruby: thing).returned) }
     end
 
     def command_chat
@@ -280,6 +292,33 @@ class Dorian
       )
 
       puts "." if self?
+    end
+
+    def command_dot
+      dir = files.first || arguments.first || "."
+
+      ignore_file = File.expand_path("#{dir.chomp("/")}/.dotignore")
+      ignore_content = File.exist?(ignore_file) ? File.read(ignore_file) : ""
+      ignore_patterns =
+        ignore_content
+          .lines
+          .map(&:strip)
+          .reject { |line| line.empty? || line.start_with?("#") }
+          .map { |pattern| Regexp.new("\\A#{pattern}\\z") }
+
+      Git
+        .open(dir)
+        .ls_files
+        .map(&:first)
+        .each do |file|
+          next if ignore_patterns.any? { |pattern| pattern.match?(file) }
+
+          homefile = "#{Dir.home}/#{file}"
+          dotfile = File.expand_path("#{dir.chomp("/")}/#{file}")
+          File.delete(homefile) if File.exist?(homefile) || File.symlink?(homefile)
+          FileUtils.mkdir_p(File.dirname(homefile))
+          FileUtils.ln_s(dotfile, homefile, verbose: true)
+        end
     end
 
     def self?
@@ -410,7 +449,7 @@ class Dorian
     def outputs(content, file: nil)
       if write? && file
         File.write(file, to_output(content))
-      else
+      elsif !content.nil?
         puts to_output(content)
       end
     end

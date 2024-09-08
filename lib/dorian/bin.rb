@@ -335,7 +335,9 @@ class Dorian
 
           homefile = "#{Dir.home}/#{file}"
           dotfile = File.expand_path("#{dir.chomp("/")}/#{file}")
-          File.delete(homefile) if File.exist?(homefile) || File.symlink?(homefile)
+          if File.exist?(homefile) || File.symlink?(homefile)
+            File.delete(homefile)
+          end
           FileUtils.mkdir_p(File.dirname(homefile))
           FileUtils.ln_s(dotfile, homefile, verbose: true)
         end
@@ -936,7 +938,7 @@ class Dorian
 
     def match_filetypes?(path)
       return true unless arguments.any?
-      return true unless arguments.intersect?(["rb", "ruby"])
+      return true unless arguments.intersect?(%w[rb ruby])
 
       ruby_extensions = %w[
         .rb

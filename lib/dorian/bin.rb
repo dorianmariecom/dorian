@@ -52,7 +52,6 @@ class Dorian
           },
           parallel: {
             alias: :p,
-            default: true
           },
           parallel_type: {
             alias: :pt,
@@ -218,6 +217,10 @@ class Dorian
         arguments.delete("lstrip")
         @command = :lstrip
         command_lstrip
+      when :merge
+        arguments.delete("merge")
+        @command = :merge
+        command_merge
       else
         arguments.delete("read")
         @command = :read
@@ -412,6 +415,10 @@ class Dorian
       each(everything) do |input|
         each(lines(reads(input)), progress: true) { |line| evaluates(it: line) }
       end
+    end
+
+    def command_merge
+      outputs(map(everything) { |thing| lines(reads(thing)) }.inject(&:+))
     end
 
     def command_tally

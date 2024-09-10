@@ -206,6 +206,18 @@ class Dorian
         arguments.delete("ls")
         @command = :ls
         command_ls
+      when :strip
+        arguments.delete("strip")
+        @command = :strip
+        command_strip
+      when :rstrip
+        arguments.delete("rstrip")
+        @command = :rstrip
+        command_rstrip
+      when :lstrip
+        arguments.delete("lstrip")
+        @command = :lstrip
+        command_lstrip
       else
         arguments.delete("read")
         @command = :read
@@ -264,6 +276,36 @@ class Dorian
       end
 
       each(stdin_arguments + arguments) { |input| outputs(reads(input)) }
+    end
+
+    def command_strip
+      each(stdin_files + files) do |input|
+        outputs(lines(reads(File.read(input)), strip: :strip), file: input)
+      end
+
+      each(stdin_arguments + arguments) do |input|
+        outputs(lines(reads(input), strip: :strip))
+      end
+    end
+
+    def command_rstrip
+      each(stdin_files + files) do |input|
+        outputs(lines(reads(File.read(input)), strip: :rstrip), file: input)
+      end
+
+      each(stdin_arguments + arguments) do |input|
+        outputs(lines(reads(input), strip: :rstrip))
+      end
+    end
+
+    def command_lstrip
+      each(stdin_files + files) do |input|
+        outputs(lines(reads(File.read(input)), strip: :lstrip), file: input)
+      end
+
+      each(stdin_arguments + arguments) do |input|
+        outputs(lines(reads(input), strip: :lstrip))
+      end
     end
 
     def everything
@@ -724,9 +766,9 @@ class Dorian
       end
     end
 
-    def lines(input)
+    def lines(input, strip: :rstrip)
       if input.is_a?(String)
-        input.lines.map(&:rstrip)
+        input.lines.map(&strip)
       elsif deep?
         deep_lines(input)
       else

@@ -221,6 +221,10 @@ class Dorian
         arguments.delete("merge")
         @command = :merge
         command_merge
+      when :pluck
+        arguments.delete("pluck")
+        @command = :pluck
+        command_pluck
       else
         arguments.delete("read")
         @command = :read
@@ -419,6 +423,10 @@ class Dorian
 
     def command_merge
       outputs(map(everything) { |thing| lines(reads(thing)) }.inject(&:+))
+    end
+
+    def command_pluck
+      outputs(map(everything) { |thing| pluck(lines(reads(thing))) }.inject(&:+))
     end
 
     def command_tally
@@ -1056,6 +1064,28 @@ class Dorian
         File.open(path, &:gets).to_s.encode("UTF-8", invalid: :replace)
 
       /\A#!.*ruby\z/.match?(first_line)
+    end
+
+    def pluck(object)
+      map(wrap(object).from_deep_struct) do |element|
+        results = arguments.map do |argument|
+          if element.is_a?(Array) && argument.to_i.to_s == argument
+            element[argument.to_i]
+          elsif element.is_a?(Hash) && element.keys.include?(argument)
+            { argument => element[argument] }
+          else
+            evaluates(ruby: argument, it: element.to_deep_struct).returned
+          end
+        end
+
+        if results.all? { |result| result.is_a?(Hash) }
+          results.inject(&:merge).to_deep_struct
+        else
+          results.map do |result|
+            result.is_a?(Hash) ? result.values.first : result
+          end.to_deep_struct
+        end
+      end
     end
 
     def evaluates(

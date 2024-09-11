@@ -430,11 +430,15 @@ class Dorian
     end
 
     def command_pluck
-      outputs(map(everything) { |thing| pluck(lines(reads(thing))) }.inject(&:+))
+      outputs(
+        map(everything) { |thing| pluck(lines(reads(thing))) }.inject(&:+)
+      )
     end
 
     def command_shuffle
-      outputs(map(everything) { |thing| lines(reads(thing)) }.inject(&:+).shuffle)
+      outputs(
+        map(everything) { |thing| lines(reads(thing)) }.inject(&:+).shuffle
+      )
     end
 
     def command_tally
@@ -464,7 +468,9 @@ class Dorian
     end
 
     def command_prepend
-      outputs(map(everything.reverse) { |input| lines(reads(input)) }.inject(&:+))
+      outputs(
+        map(everything.reverse) { |input| lines(reads(input)) }.inject(&:+)
+      )
     end
 
     def command_select

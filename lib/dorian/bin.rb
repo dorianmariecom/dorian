@@ -225,6 +225,10 @@ class Dorian
         arguments.delete("pluck")
         @command = :pluck
         command_pluck
+      when :shuffle
+        arguments.delete("shuffle")
+        @command = :shuffle
+        command_shuffle
       else
         arguments.delete("read")
         @command = :read
@@ -422,11 +426,15 @@ class Dorian
     end
 
     def command_merge
-      outputs(map(everything) { |thing| lines(reads(thing)) }.sum)
+      outputs(map(everything) { |thing| lines(reads(thing)) }.inject(&:+))
     end
 
     def command_pluck
-      outputs(map(everything) { |thing| pluck(lines(reads(thing))) }.sum)
+      outputs(map(everything) { |thing| pluck(lines(reads(thing))) }.inject(&:+))
+    end
+
+    def command_shuffle
+      outputs(map(everything) { |thing| lines(reads(thing)) }.inject(&:+).shuffle)
     end
 
     def command_tally
@@ -452,11 +460,11 @@ class Dorian
     end
 
     def command_append
-      outputs(everything.sum { |input| lines(reads(input)) })
+      outputs(map(everything) { |input| lines(reads(input)) }.inject(&:+))
     end
 
     def command_prepend
-      outputs(everything.reverse.sum { |input| lines(reads(input)) })
+      outputs(map(everything.reject) { |input| lines(reads(input)) }.inject(&:+))
     end
 
     def command_select

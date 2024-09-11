@@ -51,7 +51,7 @@ class Dorian
             alias: :o
           },
           parallel: {
-            alias: :p,
+            alias: :p
           },
           parallel_type: {
             alias: :pt,
@@ -422,11 +422,11 @@ class Dorian
     end
 
     def command_merge
-      outputs(map(everything) { |thing| lines(reads(thing)) }.inject(&:+))
+      outputs(map(everything) { |thing| lines(reads(thing)) }.sum)
     end
 
     def command_pluck
-      outputs(map(everything) { |thing| pluck(lines(reads(thing))) }.inject(&:+))
+      outputs(map(everything) { |thing| pluck(lines(reads(thing))) }.sum)
     end
 
     def command_tally
@@ -1068,22 +1068,23 @@ class Dorian
 
     def pluck(object)
       map(wrap(object).from_deep_struct) do |element|
-        results = arguments.map do |argument|
-          if element.is_a?(Array) && argument.to_i.to_s == argument
-            element[argument.to_i]
-          elsif element.is_a?(Hash) && element.keys.include?(argument)
-            { argument => element[argument] }
-          else
-            evaluates(ruby: argument, it: element.to_deep_struct).returned
+        results =
+          arguments.map do |argument|
+            if element.is_a?(Array) && argument.to_i.to_s == argument
+              element[argument.to_i]
+            elsif element.is_a?(Hash) && element.key?(argument)
+              { argument => element[argument] }
+            else
+              evaluates(ruby: argument, it: element.to_deep_struct).returned
+            end
           end
-        end
 
-        if results.all? { |result| result.is_a?(Hash) }
+        if results.all?(Hash)
           results.inject(&:merge).to_deep_struct
         else
-          results.map do |result|
-            result.is_a?(Hash) ? result.values.first : result
-          end.to_deep_struct
+          results
+            .map { |result| result.is_a?(Hash) ? result.values.first : result }
+            .to_deep_struct
         end
       end
     end

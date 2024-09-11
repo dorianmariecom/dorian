@@ -464,7 +464,7 @@ class Dorian
     end
 
     def command_prepend
-      outputs(map(everything.reject) { |input| lines(reads(input)) }.inject(&:+))
+      outputs(map(everything.reverse) { |input| lines(reads(input)) }.inject(&:+))
     end
 
     def command_select

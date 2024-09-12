@@ -287,7 +287,7 @@ class Dorian
 
     def command_rename
       from, to = arguments
-      files = stdin_files + files
+      files = stdin_files + self.files
       (files - directories).each { |file| rename(file, file.gsub(from, to)) }
       directories.each { |dir| rename(dir, dir.gsub(from, to)) }
     end

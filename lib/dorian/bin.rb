@@ -229,6 +229,10 @@ class Dorian
         arguments.delete("shuffle")
         @command = :shuffle
         command_shuffle
+      when :rename
+        arguments.delete("rename")
+        @command = :rename
+        command_rename
       else
         arguments.delete("read")
         @command = :read
@@ -279,6 +283,24 @@ class Dorian
       Git.open(".").commit(message)
 
       puts message
+    end
+
+    def command_rename
+      from, to = arguments
+      files = stdin_files + files
+      (files - directories).each { |file| rename(file, file.gsub(from, to)) }
+      directories.each { |dir| rename(dir, dir.gsub(from, to)) }
+    end
+
+    def directories
+      (stdin_files + files).select { |file| File.directory?(file) }
+    end
+
+    def rename(old, new)
+      return if old == new
+
+      puts "#{old} -> #{new}"
+      File.rename(old, new)
     end
 
     def command_read

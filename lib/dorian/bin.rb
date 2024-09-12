@@ -246,6 +246,11 @@ class Dorian
         arguments.delete("table")
         @command = :table
         command_table
+      when :then
+        arguments.delete("then")
+        @command = :then
+        @ruby = arguments.delete_at(0)
+        command_then
       else
         arguments.delete("read")
         @command = :read
@@ -258,7 +263,15 @@ class Dorian
     end
 
     def command_eval
-      each(everything) { |thing| outputs(evaluates(ruby: thing).returned) }
+      each(everything) { |thing| outputs(evaluates(ruby: thing)) }
+    end
+
+    def command_then
+      each(stdin_files + files) do |input|
+        outputs(evaluates(it: reads(File.read(input))), file: input)
+      end
+
+      each(stdin_arguments + arguments) { |input| outputs(evaluates(it: reads(input))) }
     end
 
     def command_table
@@ -511,7 +524,7 @@ class Dorian
               if ruby.to_s.empty?
                 element
               else
-                evaluates(it: element, returns: true, stdout: false).returned
+                evaluates(it: element, returns: true, stdout: false)
               end
             end.tally
           )
@@ -962,7 +975,7 @@ class Dorian
     end
 
     def match?(element, ruby: @ruby)
-      !!evaluates(ruby:, it: element, stdout: false, returns: true).returned
+      !!evaluates(ruby:, it: element, stdout: false, returns: true)
     end
 
     def token(file)
@@ -1162,7 +1175,7 @@ class Dorian
           elsif element.is_a?(Hash) && element.key?(argument)
             { argument => element[argument] }
           else
-            evaluates(ruby: argument, it: element.to_deep_struct).returned
+            evaluates(ruby: argument, it: element.to_deep_struct)
           end
         end
 
@@ -1207,7 +1220,7 @@ class Dorian
         rails:,
         fast:,
         returns:
-      )
+      ).returned
     end
   end
 end

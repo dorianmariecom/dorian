@@ -237,6 +237,10 @@ class Dorian
         arguments.delete("replace")
         @command = :replace
         command_replace
+      when :sort
+        arguments.delete("sort")
+        @command = :sort
+        command_sort
       else
         arguments.delete("read")
         @command = :read
@@ -465,9 +469,22 @@ class Dorian
       outputs(map(everything) { |thing| lines(reads(thing)) }.inject(&:+))
     end
 
+    def command_sort
+      outputs(
+        map(everything) do |thing|
+          lines(reads(thing))
+        end.inject(&:+).sort_by do |line|
+          result = pluck(line).from_deep_struct
+          result.is_a?(Hash) ? result.values : result
+        end
+      )
+    end
+
     def command_pluck
       outputs(
-        map(everything) { |thing| pluck(lines(reads(thing))) }.inject(&:+)
+        map(everything) do |thing|
+          map(lines(reads(thing))) { |line| pluck(line) }
+        end.inject(&:+)
       )
     end
 
@@ -1116,26 +1133,36 @@ class Dorian
       /\A#!.*ruby\z/.match?(first_line)
     end
 
-    def pluck(object)
-      map(wrap(object).from_deep_struct) do |element|
-        results =
-          arguments.map do |argument|
-            if element.is_a?(Array) && argument.to_i.to_s == argument
-              element[argument.to_i]
-            elsif element.is_a?(Hash) && element.key?(argument)
-              { argument => element[argument] }
-            else
-              evaluates(ruby: argument, it: element.to_deep_struct).returned
-            end
-          end
+    def pluck(element)
+      element = element.from_deep_struct
 
-        if results.all?(Hash)
-          results.inject(&:merge).to_deep_struct
-        else
-          results
-            .map { |result| result.is_a?(Hash) ? result.values.first : result }
-            .to_deep_struct
+      if arguments.any?
+        keys = arguments
+      elsif element.is_a?(Hash)
+        keys = element.keys
+      elsif element.is_a?(Array)
+        keys = (0...(element.size)).map(&:to_s)
+      else
+        keys = "it"
+      end
+
+      results =
+        keys.map do |argument|
+          if element.is_a?(Array) && argument.to_i.to_s == argument
+            element[argument.to_i]
+          elsif element.is_a?(Hash) && element.key?(argument)
+            { argument => element[argument] }
+          else
+            evaluates(ruby: argument, it: element.to_deep_struct).returned
+          end
         end
+
+      if results.all?(Hash)
+        results.inject(&:merge).to_deep_struct
+      else
+        results
+          .map { |result| result.is_a?(Hash) ? result.values.first : result }
+          .to_deep_struct
       end
     end
 

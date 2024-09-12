@@ -233,6 +233,10 @@ class Dorian
         arguments.delete("rename")
         @command = :rename
         command_rename
+      when :replace
+        arguments.delete("replace")
+        @command = :replace
+        command_replace
       else
         arguments.delete("read")
         @command = :read
@@ -285,9 +289,19 @@ class Dorian
       puts message
     end
 
+    def command_replace
+      from, to = arguments
+
+      each(stdin_files + stdin_arguments + self.files) do |file|
+        next if File.directory?(file)
+
+        File.write(file, File.read(file).gsub(from, to))
+      end
+    end
+
     def command_rename
       from, to = arguments
-      files = stdin_files + self.files
+      files = stdin_files + stdin_arguments + self.files
       (files - directories).each { |file| rename(file, file.gsub(from, to)) }
       directories.each { |dir| rename(dir, dir.gsub(from, to)) }
     end

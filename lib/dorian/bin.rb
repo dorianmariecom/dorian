@@ -292,7 +292,7 @@ class Dorian
     def command_replace
       from, to = arguments
 
-      each(stdin_files + stdin_arguments + self.files) do |file|
+      each(stdin_files + stdin_arguments + files) do |file|
         next if File.directory?(file)
 
         File.write(file, File.read(file).gsub(from, to))

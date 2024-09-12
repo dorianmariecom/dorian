@@ -255,6 +255,10 @@ class Dorian
         arguments.delete("times")
         @command = :times
         command_times
+      when :uniq
+        arguments.delete("uniq")
+        @command = :uniq
+        command_uniq
       else
         arguments.delete("read")
         @command = :read
@@ -509,6 +513,14 @@ class Dorian
           result = pluck(line).from_deep_struct
           result.is_a?(Hash) ? result.values : result
         end
+      )
+    end
+
+    def command_uniq
+      outputs(
+        map(everything) do |thing|
+          lines(reads(thing))
+        end.inject(&:+).uniq { |line| pluck(line) }
       )
     end
 

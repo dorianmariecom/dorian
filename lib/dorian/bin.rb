@@ -9,6 +9,7 @@ require "git"
 require "json"
 require "net/http"
 require "parallel"
+require "terminal-table"
 require "uri"
 require "yaml"
 
@@ -241,6 +242,10 @@ class Dorian
         arguments.delete("sort")
         @command = :sort
         command_sort
+      when :table
+        arguments.delete("table")
+        @command = :table
+        command_table
       else
         arguments.delete("read")
         @command = :read
@@ -254,6 +259,10 @@ class Dorian
 
     def command_eval
       each(everything) { |thing| outputs(evaluates(ruby: thing).returned) }
+    end
+
+    def command_table
+      table(map(everything) { |thing| lines(reads(thing)) }.inject(&:+))
     end
 
     def command_chat
@@ -1163,6 +1172,17 @@ class Dorian
         results
           .map { |result| result.is_a?(Hash) ? result.values.first : result }
           .to_deep_struct
+      end
+    end
+
+    def table(data)
+      is_hashes = data.first.from_deep_struct.is_a?(Hash)
+      headings = is_hashes ? data.first.to_h.keys : nil
+      rows = is_hashes ? data.map(&:values) : data.map { |row| wrap(row) }
+      if headings
+        puts Terminal::Table.new(headings: headings, rows: rows)
+      else
+        puts Terminal::Table.new(rows: rows)
       end
     end
 

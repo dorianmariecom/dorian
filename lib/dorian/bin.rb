@@ -251,6 +251,10 @@ class Dorian
         @command = :then
         @ruby = arguments.delete_at(0)
         command_then
+      when :times
+        arguments.delete("times")
+        @command = :times
+        command_times
       else
         arguments.delete("read")
         @command = :read
@@ -260,6 +264,12 @@ class Dorian
 
     def files
       parsed.files
+    end
+
+    def command_times
+      map(everything, &:to_i).sum.times do |index|
+        puts index + 1
+      end
     end
 
     def command_eval

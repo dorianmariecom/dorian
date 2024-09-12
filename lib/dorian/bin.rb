@@ -259,6 +259,10 @@ class Dorian
         arguments.delete("uniq")
         @command = :uniq
         command_uniq
+      when :write
+        arguments.delete("write")
+        @command = :write
+        command_write
       else
         arguments.delete("read")
         @command = :read
@@ -355,6 +359,11 @@ class Dorian
 
       puts "#{old} -> #{new}"
       File.rename(old, new)
+    end
+
+    def command_write
+      content = read_stdin.join
+      each(files + arguments) { |file| File.write(file, content) }
     end
 
     def command_read

@@ -263,10 +263,130 @@ class Dorian
         arguments.delete("write")
         @command = :write
         command_write
+      when :release
+        arguments.delete("release")
+        @command = :release
+        command_release
+      when :top
+        arguments.delete("top")
+        @command = :top
+        command_top
+      when :tree
+        arguments.delete("tree")
+        @command = :tree
+        command_tree
       else
         arguments.delete("read")
         @command = :read
         command_read
+      end
+    end
+
+    def command_release
+      File.delete(*Dir["*.gem"])
+      system("gem build")
+      system("gem push *.gem")
+      File.delete(*Dir["*.gem"])
+    end
+
+    def command_top
+      shell = arguments[0] || File.basename(ENV.fetch("SHELL", nil)) || "bash"
+      limit = arguments[1] || 10
+
+      history =
+        case shell.to_s.downcase
+        when "fish"
+          File
+            .read("#{Dir.home}/.local/share/fish/fish_history")
+            .lines
+            .grep(/^- cmd: /)
+            .map { |line| line.split("- cmd: ", 2).last.strip }
+        when "bash"
+          File.read("#{Dir.home}/.bash_history").lines.map(&:strip)
+        when "zsh"
+          File.read("#{Dir.home}/.zsh_history").lines.map(&:strip)
+        else
+          raise NotImplementedError, shell
+        end
+
+      table(
+        history
+          .map { |line| line.split.first }
+          .tally
+          .to_a
+          .sort_by(&:last)
+          .reverse
+          .map
+          .with_index do |(command, command_count), index|
+            {
+              "#" => index + 1,
+              :count => command_count,
+              :percent =>
+                "#{(command_count * 100 / history.size.to_f).round(3)}%",
+              :command =>
+            }
+          end
+          .first(limit)
+      )
+    end
+
+    def command_tree
+      space = "    "
+      right = "└── "
+      down = "│   "
+      down_and_right = "├── "
+
+      git_ls_files = lambda { |path| Git.open(".").ls_files(path).map(&:first) }
+
+      group =
+        lambda do |files|
+          files
+            .group_by { |file| file.split("/").first }
+            .transform_values do |values|
+              group.call(
+                values
+                  .map { |value| value.split("/")[1..].join("/") }
+                  .reject(&:empty?)
+              )
+            end
+        end
+
+      print =
+        lambda do |key:, values:, index: 0, size: 1, prefix: ""|
+          key = "#{key}/" if values.any?
+          last = index + 1 == size
+          right_prefix = last ? right : down_and_right
+          puts prefix + right_prefix + key
+          values.each.with_index do |(value_key, value_values), value_index|
+            print.call(
+              key: value_key,
+              values: value_values,
+              index: value_index,
+              size: values.size,
+              prefix: prefix + (last ? space : down)
+            )
+          end
+        end
+
+      keys = (arguments + files)
+      keys = ["."] unless keys.any?
+
+      keys.each do |key|
+        files =
+          git_ls_files
+            .call(key)
+            .map { |file| parsed.arguments.any? ? file.sub(key, "") : file }
+        values = group.call(files)
+        key = "#{key}/" if values.any? && key != "." && key[-1] != "/"
+        puts key
+        values.each.with_index do |(value_key, value_values), value_index|
+          print.call(
+            key: value_key,
+            values: value_values,
+            index: value_index,
+            size: values.size
+          )
+        end
       end
     end
 
@@ -275,9 +395,7 @@ class Dorian
     end
 
     def command_times
-      map(everything, &:to_i).sum.times do |index|
-        puts index + 1
-      end
+      map(everything, &:to_i).sum.times { |index| puts index + 1 }
     end
 
     def command_eval
@@ -289,7 +407,9 @@ class Dorian
         outputs(evaluates(it: reads(File.read(input))), file: input)
       end
 
-      each(stdin_arguments + arguments) { |input| outputs(evaluates(it: reads(input))) }
+      each(stdin_arguments + arguments) do |input|
+        outputs(evaluates(it: reads(input)))
+      end
     end
 
     def command_table
@@ -516,20 +636,20 @@ class Dorian
 
     def command_sort
       outputs(
-        map(everything) do |thing|
-          lines(reads(thing))
-        end.inject(&:+).sort_by do |line|
-          result = pluck(line).from_deep_struct
-          result.is_a?(Hash) ? result.values : result
-        end
+        map(everything) { |thing| lines(reads(thing)) }
+          .inject(&:+)
+          .sort_by do |line|
+            result = pluck(line).from_deep_struct
+            result.is_a?(Hash) ? result.values : result
+          end
       )
     end
 
     def command_uniq
       outputs(
-        map(everything) do |thing|
-          lines(reads(thing))
-        end.inject(&:+).uniq { |line| pluck(line) }
+        map(everything) { |thing| lines(reads(thing)) }
+          .inject(&:+)
+          .uniq { |line| pluck(line) }
       )
     end
 
@@ -1113,9 +1233,9 @@ class Dorian
       Tiktoken.encoding_for_model("gpt-4o")
     end
 
-    def match_filetypes?(path)
-      return true unless arguments.any?
-      return true unless arguments.intersect?(%w[rb ruby])
+    def match_filetypes?(path, filetypes: arguments)
+      return true if filetypes.none?
+      return true unless filetypes.intersect?(%w[rb ruby])
 
       ruby_extensions = %w[
         .rb
@@ -1189,15 +1309,16 @@ class Dorian
     def pluck(element)
       element = element.from_deep_struct
 
-      if arguments.any?
-        keys = arguments
-      elsif element.is_a?(Hash)
-        keys = element.keys
-      elsif element.is_a?(Array)
-        keys = (0...(element.size)).map(&:to_s)
-      else
-        keys = "it"
-      end
+      keys =
+        if arguments.any?
+          arguments
+        elsif element.is_a?(Hash)
+          element.keys
+        elsif element.is_a?(Array)
+          (0...(element.size)).map(&:to_s)
+        else
+          "it"
+        end
 
       results =
         keys.map do |argument|
@@ -1224,9 +1345,9 @@ class Dorian
       headings = is_hashes ? data.first.to_h.keys : nil
       rows = is_hashes ? data.map(&:values) : data.map { |row| wrap(row) }
       if headings
-        puts Terminal::Table.new(headings: headings, rows: rows)
+        puts Terminal::Table.new(headings:, rows:)
       else
-        puts Terminal::Table.new(rows: rows)
+        puts Terminal::Table.new(rows:)
       end
     end
 

@@ -1,15 +1,19 @@
 #!/usr/bin/env node
 "use strict";
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __commonJS = function(cb, mod) {
+var __commonJS = function (cb, mod) {
   return function __require() {
-    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    return (
+      mod ||
+        (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod),
+      mod.exports
+    );
   };
 };
 
 // node_modules/semver-compare/index.js
 var require_semver_compare = __commonJS({
-  "node_modules/semver-compare/index.js": function(exports2, module2) {
+  "node_modules/semver-compare/index.js": function (exports2, module2) {
     module2.exports = function cmp(a, b) {
       var pa = a.split(".");
       var pb = b.split(".");
@@ -23,12 +27,12 @@ var require_semver_compare = __commonJS({
       }
       return 0;
     };
-  }
+  },
 });
 
 // node_modules/please-upgrade-node/index.js
 var require_please_upgrade_node = __commonJS({
-  "node_modules/please-upgrade-node/index.js": function(exports2, module2) {
+  "node_modules/please-upgrade-node/index.js": function (exports2, module2) {
     var semverCompare = require_semver_compare();
     module2.exports = function pleaseUpgradeNode2(pkg, opts) {
       var opts = opts || {};
@@ -39,7 +43,10 @@ var require_please_upgrade_node = __commonJS({
           console.error(opts.message(requiredVersion));
         } else {
           console.error(
-            pkg.name + " requires at least version " + requiredVersion + " of Node, please upgrade"
+            pkg.name +
+              " requires at least version " +
+              requiredVersion +
+              " of Node, please upgrade",
           );
         }
         if (opts.hasOwnProperty("exitCode")) {
@@ -49,7 +56,7 @@ var require_please_upgrade_node = __commonJS({
         }
       }
     };
-  }
+  },
 });
 
 // bin/prettier.cjs

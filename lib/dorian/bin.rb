@@ -361,23 +361,27 @@ class Dorian
       context.attach("read", proc { |path| File.read(path) })
       context.attach(
         "write",
-        proc { |path, content| File.write(filename, content) }
+        proc { |path, content| File.write(path, content) }
       )
+
       root = File.expand_path("../../", __dir__)
+
       prettier_path = File.join(root, "vendor/prettier/standalone.js")
-      babel_path = File.join(root, "vendor/prettier/plugins/babel.js")
-      estree_path = File.join(root, "vendor/prettier/plugins/estree.js")
       prettier_js = File.read(prettier_path)
-      babel_js = File.read(babel_path)
-      estree_js = File.read(estree_path)
+
       context.eval(prettier_js)
-      context.eval("module = { exports: {} }; exports = module.exports")
-      context.eval(babel_js)
-      context.eval("babel = module.exports;")
-      context.eval("module = { exports: {} }; exports = module.exports")
-      context.eval(estree_js)
-      context.eval("estree = module.exports;")
-      context.eval("plugins = [babel, estree];")
+      plugins = %w[babel estree typescript html markdown]
+
+      plugins.each do |plugin|
+        path = File.join(root, "vendor/prettier/plugins/#{plugin}.js")
+        js = File.read(path)
+        context.eval("module = { exports: {} }; exports = module.exports")
+        context.eval(js)
+        context.eval("#{plugin} = module.exports;")
+      end
+
+      context.eval("plugins = [#{plugins.join(", ")}];")
+
       context.eval(<<~JS)
         format = async (path, parser) => {
           try {
@@ -1359,6 +1363,9 @@ class Dorian
       return :yaml if ext == ".yml"
       return :csv if ext == ".csv"
       return :js if ext == ".js"
+      return :js if ext == ".mjs"
+      return :js if ext == ".cjs"
+      return :ts if ext == ".ts"
       return :css if ext == ".css"
       return :html if ext == ".html"
       return :html if ext == ".htm"
@@ -1382,8 +1389,8 @@ class Dorian
       return unless File.exist?(path)
       first_line = File.open(path, &:gets).to_s
       first_line = first_line.encode("UTF-8", invalid: :replace)
-      return :ruby if /\A#!.*ruby\z/.match?(first_line)
-      false
+      return :ruby if first_line == "#!/usr/bin/env ruby\n"
+      nil
     end
 
     def match_filetypes?(path, filetypes: arguments)
@@ -1507,6 +1514,8 @@ class Dorian
         after = sort(YAML.safe_load(before)).to_yaml
       when :js
         context.eval("format(#{path.to_json}, 'babel')")
+      when :ts
+        context.eval("format(#{path.to_json}, 'typescript')")
       end
 
       if after && before != after

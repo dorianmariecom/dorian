@@ -9,7 +9,7 @@ var public_exports = {};
 __export(public_exports, {
   builders: () => builders,
   printer: () => printer,
-  utils: () => utils
+  utils: () => utils,
 });
 
 // src/document/constants.js
@@ -41,7 +41,7 @@ var VALID_OBJECT_DOC_TYPES = /* @__PURE__ */ new Set([
   DOC_TYPE_LINE_SUFFIX_BOUNDARY,
   DOC_TYPE_LINE,
   DOC_TYPE_LABEL,
-  DOC_TYPE_BREAK_PARENT
+  DOC_TYPE_BREAK_PARENT,
 ]);
 
 // src/document/utils/get-doc-type.js
@@ -63,7 +63,8 @@ function getDocType(doc) {
 var get_doc_type_default = getDocType;
 
 // src/document/invalid-doc-error.js
-var disjunctionListFormat = (list) => new Intl.ListFormat("en-US", { type: "disjunction" }).format(list);
+var disjunctionListFormat = (list) =>
+  new Intl.ListFormat("en-US", { type: "disjunction" }).format(list);
 function getDocErrorMessage(doc) {
   const type = doc === null ? "null" : typeof doc;
   if (type !== "string" && type !== "object") {
@@ -78,7 +79,7 @@ Expected it to be 'string' or 'object'.`;
     return `Unexpected doc '${objectType}'.`;
   }
   const EXPECTED_TYPE_VALUES = disjunctionListFormat(
-    [...VALID_OBJECT_DOC_TYPES].map((type2) => `'${type2}'`)
+    [...VALID_OBJECT_DOC_TYPES].map((type2) => `'${type2}'`),
   );
   return `Unexpected doc.type '${doc.type}'.
 Expected it to be ${EXPECTED_TYPE_VALUES}.`;
@@ -155,29 +156,32 @@ function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {
 var traverse_doc_default = traverseDoc;
 
 // src/document/utils/assert-doc.js
-var noop = () => {
-};
-var assertDoc = true ? noop : function(doc) {
-  traverse_doc_default(doc, (doc2) => {
-    if (checked.has(doc2)) {
-      return false;
-    }
-    if (typeof doc2 !== "string") {
-      checked.add(doc2);
-    }
-  });
-};
-var assertDocArray = true ? noop : function(docs, optional = false) {
-  if (optional && !docs) {
-    return;
-  }
-  if (!Array.isArray(docs)) {
-    throw new TypeError("Unexpected doc array.");
-  }
-  for (const doc of docs) {
-    assertDoc(doc);
-  }
-};
+var noop = () => {};
+var assertDoc = true
+  ? noop
+  : function (doc) {
+      traverse_doc_default(doc, (doc2) => {
+        if (checked.has(doc2)) {
+          return false;
+        }
+        if (typeof doc2 !== "string") {
+          checked.add(doc2);
+        }
+      });
+    };
+var assertDocArray = true
+  ? noop
+  : function (docs, optional = false) {
+      if (optional && !docs) {
+        return;
+      }
+      if (!Array.isArray(docs)) {
+        throw new TypeError("Unexpected doc array.");
+      }
+      for (const doc of docs) {
+        assertDoc(doc);
+      }
+    };
 
 // src/document/builders.js
 function indent(contents) {
@@ -193,14 +197,14 @@ function group(contents, opts = {}) {
   assertDocArray(
     opts.expandedStates,
     /* optional */
-    true
+    true,
   );
   return {
     type: DOC_TYPE_GROUP,
     id: opts.id,
     contents,
     break: Boolean(opts.shouldBreak),
-    expandedStates: opts.expandedStates
+    expandedStates: opts.expandedStates,
   };
 }
 function dedentToRoot(contents) {
@@ -228,7 +232,7 @@ function ifBreak(breakContents, flatContents = "", opts = {}) {
     type: DOC_TYPE_IF_BREAK,
     breakContents,
     flatContents,
-    groupId: opts.groupId
+    groupId: opts.groupId,
   };
 }
 function indentIfBreak(contents, opts) {
@@ -237,7 +241,7 @@ function indentIfBreak(contents, opts) {
     type: DOC_TYPE_INDENT_IF_BREAK,
     contents,
     groupId: opts.groupId,
-    negate: opts.negate
+    negate: opts.negate,
   };
 }
 function lineSuffix(contents) {
@@ -251,7 +255,7 @@ var hardlineWithoutBreakParent = { type: DOC_TYPE_LINE, hard: true };
 var literallineWithoutBreakParent = {
   type: DOC_TYPE_LINE,
   hard: true,
-  literal: true
+  literal: true,
 };
 var line = { type: DOC_TYPE_LINE };
 var softline = { type: DOC_TYPE_LINE, soft: true };
@@ -333,14 +337,152 @@ var emoji_regex_default = () => {
 
 // node_modules/get-east-asian-width/lookup.js
 function isFullWidth(x) {
-  return x === 12288 || x >= 65281 && x <= 65376 || x >= 65504 && x <= 65510;
+  return (
+    x === 12288 || (x >= 65281 && x <= 65376) || (x >= 65504 && x <= 65510)
+  );
 }
 function isWide(x) {
-  return x >= 4352 && x <= 4447 || x === 8986 || x === 8987 || x === 9001 || x === 9002 || x >= 9193 && x <= 9196 || x === 9200 || x === 9203 || x === 9725 || x === 9726 || x === 9748 || x === 9749 || x >= 9800 && x <= 9811 || x === 9855 || x === 9875 || x === 9889 || x === 9898 || x === 9899 || x === 9917 || x === 9918 || x === 9924 || x === 9925 || x === 9934 || x === 9940 || x === 9962 || x === 9970 || x === 9971 || x === 9973 || x === 9978 || x === 9981 || x === 9989 || x === 9994 || x === 9995 || x === 10024 || x === 10060 || x === 10062 || x >= 10067 && x <= 10069 || x === 10071 || x >= 10133 && x <= 10135 || x === 10160 || x === 10175 || x === 11035 || x === 11036 || x === 11088 || x === 11093 || x >= 11904 && x <= 11929 || x >= 11931 && x <= 12019 || x >= 12032 && x <= 12245 || x >= 12272 && x <= 12287 || x >= 12289 && x <= 12350 || x >= 12353 && x <= 12438 || x >= 12441 && x <= 12543 || x >= 12549 && x <= 12591 || x >= 12593 && x <= 12686 || x >= 12688 && x <= 12771 || x >= 12783 && x <= 12830 || x >= 12832 && x <= 12871 || x >= 12880 && x <= 19903 || x >= 19968 && x <= 42124 || x >= 42128 && x <= 42182 || x >= 43360 && x <= 43388 || x >= 44032 && x <= 55203 || x >= 63744 && x <= 64255 || x >= 65040 && x <= 65049 || x >= 65072 && x <= 65106 || x >= 65108 && x <= 65126 || x >= 65128 && x <= 65131 || x >= 94176 && x <= 94180 || x === 94192 || x === 94193 || x >= 94208 && x <= 100343 || x >= 100352 && x <= 101589 || x >= 101632 && x <= 101640 || x >= 110576 && x <= 110579 || x >= 110581 && x <= 110587 || x === 110589 || x === 110590 || x >= 110592 && x <= 110882 || x === 110898 || x >= 110928 && x <= 110930 || x === 110933 || x >= 110948 && x <= 110951 || x >= 110960 && x <= 111355 || x === 126980 || x === 127183 || x === 127374 || x >= 127377 && x <= 127386 || x >= 127488 && x <= 127490 || x >= 127504 && x <= 127547 || x >= 127552 && x <= 127560 || x === 127568 || x === 127569 || x >= 127584 && x <= 127589 || x >= 127744 && x <= 127776 || x >= 127789 && x <= 127797 || x >= 127799 && x <= 127868 || x >= 127870 && x <= 127891 || x >= 127904 && x <= 127946 || x >= 127951 && x <= 127955 || x >= 127968 && x <= 127984 || x === 127988 || x >= 127992 && x <= 128062 || x === 128064 || x >= 128066 && x <= 128252 || x >= 128255 && x <= 128317 || x >= 128331 && x <= 128334 || x >= 128336 && x <= 128359 || x === 128378 || x === 128405 || x === 128406 || x === 128420 || x >= 128507 && x <= 128591 || x >= 128640 && x <= 128709 || x === 128716 || x >= 128720 && x <= 128722 || x >= 128725 && x <= 128727 || x >= 128732 && x <= 128735 || x === 128747 || x === 128748 || x >= 128756 && x <= 128764 || x >= 128992 && x <= 129003 || x === 129008 || x >= 129292 && x <= 129338 || x >= 129340 && x <= 129349 || x >= 129351 && x <= 129535 || x >= 129648 && x <= 129660 || x >= 129664 && x <= 129672 || x >= 129680 && x <= 129725 || x >= 129727 && x <= 129733 || x >= 129742 && x <= 129755 || x >= 129760 && x <= 129768 || x >= 129776 && x <= 129784 || x >= 131072 && x <= 196605 || x >= 196608 && x <= 262141;
+  return (
+    (x >= 4352 && x <= 4447) ||
+    x === 8986 ||
+    x === 8987 ||
+    x === 9001 ||
+    x === 9002 ||
+    (x >= 9193 && x <= 9196) ||
+    x === 9200 ||
+    x === 9203 ||
+    x === 9725 ||
+    x === 9726 ||
+    x === 9748 ||
+    x === 9749 ||
+    (x >= 9800 && x <= 9811) ||
+    x === 9855 ||
+    x === 9875 ||
+    x === 9889 ||
+    x === 9898 ||
+    x === 9899 ||
+    x === 9917 ||
+    x === 9918 ||
+    x === 9924 ||
+    x === 9925 ||
+    x === 9934 ||
+    x === 9940 ||
+    x === 9962 ||
+    x === 9970 ||
+    x === 9971 ||
+    x === 9973 ||
+    x === 9978 ||
+    x === 9981 ||
+    x === 9989 ||
+    x === 9994 ||
+    x === 9995 ||
+    x === 10024 ||
+    x === 10060 ||
+    x === 10062 ||
+    (x >= 10067 && x <= 10069) ||
+    x === 10071 ||
+    (x >= 10133 && x <= 10135) ||
+    x === 10160 ||
+    x === 10175 ||
+    x === 11035 ||
+    x === 11036 ||
+    x === 11088 ||
+    x === 11093 ||
+    (x >= 11904 && x <= 11929) ||
+    (x >= 11931 && x <= 12019) ||
+    (x >= 12032 && x <= 12245) ||
+    (x >= 12272 && x <= 12287) ||
+    (x >= 12289 && x <= 12350) ||
+    (x >= 12353 && x <= 12438) ||
+    (x >= 12441 && x <= 12543) ||
+    (x >= 12549 && x <= 12591) ||
+    (x >= 12593 && x <= 12686) ||
+    (x >= 12688 && x <= 12771) ||
+    (x >= 12783 && x <= 12830) ||
+    (x >= 12832 && x <= 12871) ||
+    (x >= 12880 && x <= 19903) ||
+    (x >= 19968 && x <= 42124) ||
+    (x >= 42128 && x <= 42182) ||
+    (x >= 43360 && x <= 43388) ||
+    (x >= 44032 && x <= 55203) ||
+    (x >= 63744 && x <= 64255) ||
+    (x >= 65040 && x <= 65049) ||
+    (x >= 65072 && x <= 65106) ||
+    (x >= 65108 && x <= 65126) ||
+    (x >= 65128 && x <= 65131) ||
+    (x >= 94176 && x <= 94180) ||
+    x === 94192 ||
+    x === 94193 ||
+    (x >= 94208 && x <= 100343) ||
+    (x >= 100352 && x <= 101589) ||
+    (x >= 101632 && x <= 101640) ||
+    (x >= 110576 && x <= 110579) ||
+    (x >= 110581 && x <= 110587) ||
+    x === 110589 ||
+    x === 110590 ||
+    (x >= 110592 && x <= 110882) ||
+    x === 110898 ||
+    (x >= 110928 && x <= 110930) ||
+    x === 110933 ||
+    (x >= 110948 && x <= 110951) ||
+    (x >= 110960 && x <= 111355) ||
+    x === 126980 ||
+    x === 127183 ||
+    x === 127374 ||
+    (x >= 127377 && x <= 127386) ||
+    (x >= 127488 && x <= 127490) ||
+    (x >= 127504 && x <= 127547) ||
+    (x >= 127552 && x <= 127560) ||
+    x === 127568 ||
+    x === 127569 ||
+    (x >= 127584 && x <= 127589) ||
+    (x >= 127744 && x <= 127776) ||
+    (x >= 127789 && x <= 127797) ||
+    (x >= 127799 && x <= 127868) ||
+    (x >= 127870 && x <= 127891) ||
+    (x >= 127904 && x <= 127946) ||
+    (x >= 127951 && x <= 127955) ||
+    (x >= 127968 && x <= 127984) ||
+    x === 127988 ||
+    (x >= 127992 && x <= 128062) ||
+    x === 128064 ||
+    (x >= 128066 && x <= 128252) ||
+    (x >= 128255 && x <= 128317) ||
+    (x >= 128331 && x <= 128334) ||
+    (x >= 128336 && x <= 128359) ||
+    x === 128378 ||
+    x === 128405 ||
+    x === 128406 ||
+    x === 128420 ||
+    (x >= 128507 && x <= 128591) ||
+    (x >= 128640 && x <= 128709) ||
+    x === 128716 ||
+    (x >= 128720 && x <= 128722) ||
+    (x >= 128725 && x <= 128727) ||
+    (x >= 128732 && x <= 128735) ||
+    x === 128747 ||
+    x === 128748 ||
+    (x >= 128756 && x <= 128764) ||
+    (x >= 128992 && x <= 129003) ||
+    x === 129008 ||
+    (x >= 129292 && x <= 129338) ||
+    (x >= 129340 && x <= 129349) ||
+    (x >= 129351 && x <= 129535) ||
+    (x >= 129648 && x <= 129660) ||
+    (x >= 129664 && x <= 129672) ||
+    (x >= 129680 && x <= 129725) ||
+    (x >= 129727 && x <= 129733) ||
+    (x >= 129742 && x <= 129755) ||
+    (x >= 129760 && x <= 129768) ||
+    (x >= 129776 && x <= 129784) ||
+    (x >= 131072 && x <= 196605) ||
+    (x >= 196608 && x <= 262141)
+  );
 }
 
 // node_modules/get-east-asian-width/index.js
-var _isNarrowWidth = (codePoint) => !(isFullWidth(codePoint) || isWide(codePoint));
+var _isNarrowWidth = (codePoint) =>
+  !(isFullWidth(codePoint) || isWide(codePoint));
 
 // src/utils/get-string-width.js
 var notAsciiRegex = /[^\x20-\x7F]/u;
@@ -355,7 +497,7 @@ function getStringWidth(text) {
   let width = 0;
   for (const character of text) {
     const codePoint = character.codePointAt(0);
-    if (codePoint <= 31 || codePoint >= 127 && codePoint <= 159) {
+    if (codePoint <= 31 || (codePoint >= 127 && codePoint <= 159)) {
       continue;
     }
     if (codePoint >= 768 && codePoint <= 879) {
@@ -389,19 +531,16 @@ function mapDoc(doc, cb) {
       case DOC_TYPE_FILL:
         return cb({
           ...doc2,
-          parts: doc2.parts.map(rec)
+          parts: doc2.parts.map(rec),
         });
       case DOC_TYPE_IF_BREAK:
         return cb({
           ...doc2,
           breakContents: rec(doc2.breakContents),
-          flatContents: rec(doc2.flatContents)
+          flatContents: rec(doc2.flatContents),
         });
       case DOC_TYPE_GROUP: {
-        let {
-          expandedStates,
-          contents
-        } = doc2;
+        let { expandedStates, contents } = doc2;
         if (expandedStates) {
           expandedStates = expandedStates.map(rec);
           contents = expandedStates[0];
@@ -411,7 +550,7 @@ function mapDoc(doc, cb) {
         return cb({
           ...doc2,
           contents,
-          expandedStates
+          expandedStates,
         });
       }
       case DOC_TYPE_ALIGN:
@@ -421,7 +560,7 @@ function mapDoc(doc, cb) {
       case DOC_TYPE_LINE_SUFFIX:
         return cb({
           ...doc2,
-          contents: rec(doc2.contents)
+          contents: rec(doc2.contents),
         });
       case DOC_TYPE_STRING:
       case DOC_TYPE_CURSOR:
@@ -471,7 +610,7 @@ function breakParentGroup(groupStack) {
       /* isOptionalObject */
       false,
       groupStack,
-      -1
+      -1,
     );
     if (!parentGroup.expandedStates && !parentGroup.break) {
       parentGroup.break = "propagated";
@@ -507,7 +646,7 @@ function propagateBreaks(doc) {
     propagateBreaksOnEnterFn,
     propagateBreaksOnExitFn,
     /* shouldTraverseConditionalGroups */
-    true
+    true,
   );
 }
 function removeLinesFn(doc) {
@@ -524,26 +663,32 @@ function removeLines(doc) {
 }
 function stripTrailingHardlineFromParts(parts) {
   parts = [...parts];
-  while (parts.length >= 2 && at_default(
-    /* isOptionalObject */
-    false,
-    parts,
-    -2
-  ).type === DOC_TYPE_LINE && at_default(
-    /* isOptionalObject */
-    false,
-    parts,
-    -1
-  ).type === DOC_TYPE_BREAK_PARENT) {
-    parts.length -= 2;
-  }
-  if (parts.length > 0) {
-    const lastPart = stripTrailingHardlineFromDoc(at_default(
+  while (
+    parts.length >= 2 &&
+    at_default(
       /* isOptionalObject */
       false,
       parts,
-      -1
-    ));
+      -2,
+    ).type === DOC_TYPE_LINE &&
+    at_default(
+      /* isOptionalObject */
+      false,
+      parts,
+      -1,
+    ).type === DOC_TYPE_BREAK_PARENT
+  ) {
+    parts.length -= 2;
+  }
+  if (parts.length > 0) {
+    const lastPart = stripTrailingHardlineFromDoc(
+      at_default(
+        /* isOptionalObject */
+        false,
+        parts,
+        -1,
+      ),
+    );
     parts[parts.length - 1] = lastPart;
   }
   return parts;
@@ -558,19 +703,19 @@ function stripTrailingHardlineFromDoc(doc) {
       const contents = stripTrailingHardlineFromDoc(doc.contents);
       return {
         ...doc,
-        contents
+        contents,
       };
     }
     case DOC_TYPE_IF_BREAK:
       return {
         ...doc,
         breakContents: stripTrailingHardlineFromDoc(doc.breakContents),
-        flatContents: stripTrailingHardlineFromDoc(doc.flatContents)
+        flatContents: stripTrailingHardlineFromDoc(doc.flatContents),
       };
     case DOC_TYPE_FILL:
       return {
         ...doc,
-        parts: stripTrailingHardlineFromParts(doc.parts)
+        parts: stripTrailingHardlineFromParts(doc.parts),
       };
     case DOC_TYPE_ARRAY:
       return stripTrailingHardlineFromParts(doc);
@@ -602,7 +747,12 @@ function cleanDocFn(doc) {
       if (!doc.contents && !doc.id && !doc.break && !doc.expandedStates) {
         return "";
       }
-      if (doc.contents.type === DOC_TYPE_GROUP && doc.contents.id === doc.id && doc.contents.break === doc.break && doc.contents.expandedStates === doc.expandedStates) {
+      if (
+        doc.contents.type === DOC_TYPE_GROUP &&
+        doc.contents.id === doc.id &&
+        doc.contents.break === doc.break &&
+        doc.contents.expandedStates === doc.expandedStates
+      ) {
         return doc.contents;
       }
       break;
@@ -626,12 +776,15 @@ function cleanDocFn(doc) {
           continue;
         }
         const [currentPart, ...restParts] = Array.isArray(part) ? part : [part];
-        if (typeof currentPart === "string" && typeof at_default(
-          /* isOptionalObject */
-          false,
-          parts,
-          -1
-        ) === "string") {
+        if (
+          typeof currentPart === "string" &&
+          typeof at_default(
+            /* isOptionalObject */
+            false,
+            parts,
+            -1,
+          ) === "string"
+        ) {
           parts[parts.length - 1] += currentPart;
         } else {
           parts.push(currentPart);
@@ -663,7 +816,11 @@ function cleanDoc(doc) {
   return mapDoc(doc, (currentDoc) => cleanDocFn(currentDoc));
 }
 function replaceEndOfLine(doc, replacement = literalline) {
-  return mapDoc(doc, (currentDoc) => typeof currentDoc === "string" ? join(replacement, currentDoc.split("\n")) : currentDoc);
+  return mapDoc(doc, (currentDoc) =>
+    typeof currentDoc === "string"
+      ? join(replacement, currentDoc.split("\n"))
+      : currentDoc,
+  );
 }
 function canBreakFn(doc) {
   if (doc.type === DOC_TYPE_LINE) {
@@ -682,22 +839,30 @@ function rootIndent() {
   return {
     value: "",
     length: 0,
-    queue: []
+    queue: [],
   };
 }
 function makeIndent(ind, options) {
-  return generateInd(ind, {
-    type: "indent"
-  }, options);
+  return generateInd(
+    ind,
+    {
+      type: "indent",
+    },
+    options,
+  );
 }
 function makeAlign(indent2, widthOrDoc, options) {
   if (widthOrDoc === Number.NEGATIVE_INFINITY) {
     return indent2.root || rootIndent();
   }
   if (widthOrDoc < 0) {
-    return generateInd(indent2, {
-      type: "dedent"
-    }, options);
+    return generateInd(
+      indent2,
+      {
+        type: "dedent",
+      },
+      options,
+    );
   }
   if (!widthOrDoc) {
     return indent2;
@@ -705,17 +870,25 @@ function makeAlign(indent2, widthOrDoc, options) {
   if (widthOrDoc.type === "root") {
     return {
       ...indent2,
-      root: indent2
+      root: indent2,
     };
   }
-  const alignType = typeof widthOrDoc === "string" ? "stringAlign" : "numberAlign";
-  return generateInd(indent2, {
-    type: alignType,
-    n: widthOrDoc
-  }, options);
+  const alignType =
+    typeof widthOrDoc === "string" ? "stringAlign" : "numberAlign";
+  return generateInd(
+    indent2,
+    {
+      type: alignType,
+      n: widthOrDoc,
+    },
+    options,
+  );
 }
 function generateInd(ind, newPart, options) {
-  const queue = newPart.type === "dedent" ? ind.queue.slice(0, -1) : [...ind.queue, newPart];
+  const queue =
+    newPart.type === "dedent"
+      ? ind.queue.slice(0, -1)
+      : [...ind.queue, newPart];
   let value = "";
   let length = 0;
   let lastTabs = 0;
@@ -748,7 +921,7 @@ function generateInd(ind, newPart, options) {
     ...ind,
     value,
     length,
-    queue
+    queue,
   };
   function addTabs(count) {
     value += "	".repeat(count);
@@ -813,7 +986,14 @@ function trim2(out) {
   }
   return trimCount;
 }
-function fits(next, restCommands, width, hasLineSuffix, groupModeMap, mustBeFlat) {
+function fits(
+  next,
+  restCommands,
+  width,
+  hasLineSuffix,
+  groupModeMap,
+  mustBeFlat,
+) {
   if (width === Number.POSITIVE_INFINITY) {
     return true;
   }
@@ -828,10 +1008,7 @@ function fits(next, restCommands, width, hasLineSuffix, groupModeMap, mustBeFlat
       cmds.push(restCommands[--restIdx]);
       continue;
     }
-    const {
-      mode,
-      doc
-    } = cmds.pop();
+    const { mode, doc } = cmds.pop();
     const docType = get_doc_type_default(doc);
     switch (docType) {
       case DOC_TYPE_STRING:
@@ -844,7 +1021,7 @@ function fits(next, restCommands, width, hasLineSuffix, groupModeMap, mustBeFlat
         for (let i = parts.length - 1; i >= 0; i--) {
           cmds.push({
             mode,
-            doc: parts[i]
+            doc: parts[i],
           });
         }
         break;
@@ -855,7 +1032,7 @@ function fits(next, restCommands, width, hasLineSuffix, groupModeMap, mustBeFlat
       case DOC_TYPE_LABEL:
         cmds.push({
           mode,
-          doc: doc.contents
+          doc: doc.contents,
         });
         break;
       case DOC_TYPE_TRIM:
@@ -866,25 +1043,31 @@ function fits(next, restCommands, width, hasLineSuffix, groupModeMap, mustBeFlat
           return false;
         }
         const groupMode = doc.break ? MODE_BREAK : mode;
-        const contents = doc.expandedStates && groupMode === MODE_BREAK ? at_default(
-          /* isOptionalObject */
-          false,
-          doc.expandedStates,
-          -1
-        ) : doc.contents;
+        const contents =
+          doc.expandedStates && groupMode === MODE_BREAK
+            ? at_default(
+                /* isOptionalObject */
+                false,
+                doc.expandedStates,
+                -1,
+              )
+            : doc.contents;
         cmds.push({
           mode: groupMode,
-          doc: contents
+          doc: contents,
         });
         break;
       }
       case DOC_TYPE_IF_BREAK: {
-        const groupMode = doc.groupId ? groupModeMap[doc.groupId] || MODE_FLAT : mode;
-        const contents = groupMode === MODE_BREAK ? doc.breakContents : doc.flatContents;
+        const groupMode = doc.groupId
+          ? groupModeMap[doc.groupId] || MODE_FLAT
+          : mode;
+        const contents =
+          groupMode === MODE_BREAK ? doc.breakContents : doc.flatContents;
         if (contents) {
           cmds.push({
             mode,
-            doc: contents
+            doc: contents,
           });
         }
         break;
@@ -915,31 +1098,32 @@ function printDocToString(doc, options) {
   const width = options.printWidth;
   const newLine = convertEndOfLineToChars(options.endOfLine);
   let pos = 0;
-  const cmds = [{
-    ind: rootIndent(),
-    mode: MODE_BREAK,
-    doc
-  }];
+  const cmds = [
+    {
+      ind: rootIndent(),
+      mode: MODE_BREAK,
+      doc,
+    },
+  ];
   const out = [];
   let shouldRemeasure = false;
   const lineSuffix2 = [];
   let printedCursorCount = 0;
   propagateBreaks(doc);
   while (cmds.length > 0) {
-    const {
-      ind,
-      mode,
-      doc: doc2
-    } = cmds.pop();
+    const { ind, mode, doc: doc2 } = cmds.pop();
     switch (get_doc_type_default(doc2)) {
       case DOC_TYPE_STRING: {
-        const formatted = newLine !== "\n" ? string_replace_all_default(
-          /* isOptionalObject */
-          false,
-          doc2,
-          "\n",
-          newLine
-        ) : doc2;
+        const formatted =
+          newLine !== "\n"
+            ? string_replace_all_default(
+                /* isOptionalObject */
+                false,
+                doc2,
+                "\n",
+                newLine,
+              )
+            : doc2;
         out.push(formatted);
         if (cmds.length > 0) {
           pos += get_string_width_default(formatted);
@@ -951,7 +1135,7 @@ function printDocToString(doc, options) {
           cmds.push({
             ind,
             mode,
-            doc: doc2[i]
+            doc: doc2[i],
           });
         }
         break;
@@ -966,14 +1150,14 @@ function printDocToString(doc, options) {
         cmds.push({
           ind: makeIndent(ind, options),
           mode,
-          doc: doc2.contents
+          doc: doc2.contents,
         });
         break;
       case DOC_TYPE_ALIGN:
         cmds.push({
           ind: makeAlign(ind, doc2.n, options),
           mode,
-          doc: doc2.contents
+          doc: doc2.contents,
         });
         break;
       case DOC_TYPE_TRIM:
@@ -986,7 +1170,7 @@ function printDocToString(doc, options) {
               cmds.push({
                 ind,
                 mode: doc2.break ? MODE_BREAK : MODE_FLAT,
-                doc: doc2.contents
+                doc: doc2.contents,
               });
               break;
             }
@@ -995,11 +1179,14 @@ function printDocToString(doc, options) {
             const next = {
               ind,
               mode: MODE_FLAT,
-              doc: doc2.contents
+              doc: doc2.contents,
             };
             const rem = width - pos;
             const hasLineSuffix = lineSuffix2.length > 0;
-            if (!doc2.break && fits(next, cmds, rem, hasLineSuffix, groupModeMap)) {
+            if (
+              !doc2.break &&
+              fits(next, cmds, rem, hasLineSuffix, groupModeMap)
+            ) {
               cmds.push(next);
             } else {
               if (doc2.expandedStates) {
@@ -1007,13 +1194,13 @@ function printDocToString(doc, options) {
                   /* isOptionalObject */
                   false,
                   doc2.expandedStates,
-                  -1
+                  -1,
                 );
                 if (doc2.break) {
                   cmds.push({
                     ind,
                     mode: MODE_BREAK,
-                    doc: mostExpanded
+                    doc: mostExpanded,
                   });
                   break;
                 } else {
@@ -1022,7 +1209,7 @@ function printDocToString(doc, options) {
                       cmds.push({
                         ind,
                         mode: MODE_BREAK,
-                        doc: mostExpanded
+                        doc: mostExpanded,
                       });
                       break;
                     } else {
@@ -1030,7 +1217,7 @@ function printDocToString(doc, options) {
                       const cmd = {
                         ind,
                         mode: MODE_FLAT,
-                        doc: state
+                        doc: state,
                       };
                       if (fits(cmd, cmds, rem, hasLineSuffix, groupModeMap)) {
                         cmds.push(cmd);
@@ -1043,7 +1230,7 @@ function printDocToString(doc, options) {
                 cmds.push({
                   ind,
                   mode: MODE_BREAK,
-                  doc: doc2.contents
+                  doc: doc2.contents,
                 });
               }
             }
@@ -1055,15 +1242,13 @@ function printDocToString(doc, options) {
             /* isOptionalObject */
             false,
             cmds,
-            -1
+            -1,
           ).mode;
         }
         break;
       case DOC_TYPE_FILL: {
         const rem = width - pos;
-        const {
-          parts
-        } = doc2;
+        const { parts } = doc2;
         if (parts.length === 0) {
           break;
         }
@@ -1071,14 +1256,21 @@ function printDocToString(doc, options) {
         const contentFlatCmd = {
           ind,
           mode: MODE_FLAT,
-          doc: content
+          doc: content,
         };
         const contentBreakCmd = {
           ind,
           mode: MODE_BREAK,
-          doc: content
+          doc: content,
         };
-        const contentFits = fits(contentFlatCmd, [], rem, lineSuffix2.length > 0, groupModeMap, true);
+        const contentFits = fits(
+          contentFlatCmd,
+          [],
+          rem,
+          lineSuffix2.length > 0,
+          groupModeMap,
+          true,
+        );
         if (parts.length === 1) {
           if (contentFits) {
             cmds.push(contentFlatCmd);
@@ -1090,12 +1282,12 @@ function printDocToString(doc, options) {
         const whitespaceFlatCmd = {
           ind,
           mode: MODE_FLAT,
-          doc: whitespace
+          doc: whitespace,
         };
         const whitespaceBreakCmd = {
           ind,
           mode: MODE_BREAK,
-          doc: whitespace
+          doc: whitespace,
         };
         if (parts.length === 2) {
           if (contentFits) {
@@ -1109,15 +1301,22 @@ function printDocToString(doc, options) {
         const remainingCmd = {
           ind,
           mode,
-          doc: fill(parts)
+          doc: fill(parts),
         };
         const secondContent = parts[0];
         const firstAndSecondContentFlatCmd = {
           ind,
           mode: MODE_FLAT,
-          doc: [content, whitespace, secondContent]
+          doc: [content, whitespace, secondContent],
         };
-        const firstAndSecondContentFits = fits(firstAndSecondContentFlatCmd, [], rem, lineSuffix2.length > 0, groupModeMap, true);
+        const firstAndSecondContentFits = fits(
+          firstAndSecondContentFlatCmd,
+          [],
+          rem,
+          lineSuffix2.length > 0,
+          groupModeMap,
+          true,
+        );
         if (firstAndSecondContentFits) {
           cmds.push(remainingCmd, whitespaceFlatCmd, contentFlatCmd);
         } else if (contentFits) {
@@ -1131,22 +1330,32 @@ function printDocToString(doc, options) {
       case DOC_TYPE_INDENT_IF_BREAK: {
         const groupMode = doc2.groupId ? groupModeMap[doc2.groupId] : mode;
         if (groupMode === MODE_BREAK) {
-          const breakContents = doc2.type === DOC_TYPE_IF_BREAK ? doc2.breakContents : doc2.negate ? doc2.contents : indent(doc2.contents);
+          const breakContents =
+            doc2.type === DOC_TYPE_IF_BREAK
+              ? doc2.breakContents
+              : doc2.negate
+                ? doc2.contents
+                : indent(doc2.contents);
           if (breakContents) {
             cmds.push({
               ind,
               mode,
-              doc: breakContents
+              doc: breakContents,
             });
           }
         }
         if (groupMode === MODE_FLAT) {
-          const flatContents = doc2.type === DOC_TYPE_IF_BREAK ? doc2.flatContents : doc2.negate ? indent(doc2.contents) : doc2.contents;
+          const flatContents =
+            doc2.type === DOC_TYPE_IF_BREAK
+              ? doc2.flatContents
+              : doc2.negate
+                ? indent(doc2.contents)
+                : doc2.contents;
           if (flatContents) {
             cmds.push({
               ind,
               mode,
-              doc: flatContents
+              doc: flatContents,
             });
           }
         }
@@ -1156,7 +1365,7 @@ function printDocToString(doc, options) {
         lineSuffix2.push({
           ind,
           mode,
-          doc: doc2.contents
+          doc: doc2.contents,
         });
         break;
       case DOC_TYPE_LINE_SUFFIX_BOUNDARY:
@@ -1164,7 +1373,7 @@ function printDocToString(doc, options) {
           cmds.push({
             ind,
             mode,
-            doc: hardlineWithoutBreakParent
+            doc: hardlineWithoutBreakParent,
           });
         }
         break;
@@ -1182,11 +1391,14 @@ function printDocToString(doc, options) {
             }
           case MODE_BREAK:
             if (lineSuffix2.length > 0) {
-              cmds.push({
-                ind,
-                mode,
-                doc: doc2
-              }, ...lineSuffix2.reverse());
+              cmds.push(
+                {
+                  ind,
+                  mode,
+                  doc: doc2,
+                },
+                ...lineSuffix2.reverse(),
+              );
               lineSuffix2.length = 0;
               break;
             }
@@ -1210,7 +1422,7 @@ function printDocToString(doc, options) {
         cmds.push({
           ind,
           mode,
-          doc: doc2.contents
+          doc: doc2.contents,
         });
         break;
       case DOC_TYPE_BREAK_PARENT:
@@ -1225,18 +1437,23 @@ function printDocToString(doc, options) {
   }
   const cursorPlaceholderIndex = out.indexOf(CURSOR_PLACEHOLDER);
   if (cursorPlaceholderIndex !== -1) {
-    const otherCursorPlaceholderIndex = out.indexOf(CURSOR_PLACEHOLDER, cursorPlaceholderIndex + 1);
+    const otherCursorPlaceholderIndex = out.indexOf(
+      CURSOR_PLACEHOLDER,
+      cursorPlaceholderIndex + 1,
+    );
     const beforeCursor = out.slice(0, cursorPlaceholderIndex).join("");
-    const aroundCursor = out.slice(cursorPlaceholderIndex + 1, otherCursorPlaceholderIndex).join("");
+    const aroundCursor = out
+      .slice(cursorPlaceholderIndex + 1, otherCursorPlaceholderIndex)
+      .join("");
     const afterCursor = out.slice(otherCursorPlaceholderIndex + 1).join("");
     return {
       formatted: beforeCursor + aroundCursor + afterCursor,
       cursorNodeStart: beforeCursor.length,
-      cursorNodeText: aroundCursor
+      cursorNodeText: aroundCursor,
     };
   }
   return {
-    formatted: out.join("")
+    formatted: out.join(""),
   };
 }
 
@@ -1267,7 +1484,7 @@ var builders = {
   literallineWithoutBreakParent,
   label,
   // TODO: Remove this in v4
-  concat: (parts) => parts
+  concat: (parts) => parts,
 };
 var printer = { printDocToString };
 var utils = {
@@ -1278,14 +1495,9 @@ var utils = {
   removeLines,
   stripTrailingHardline,
   replaceEndOfLine,
-  canBreak
+  canBreak,
 };
 
 // with-default-export:src/document/public.js
 var public_default = public_exports;
-export {
-  builders,
-  public_default as default,
-  printer,
-  utils
-};
+export { builders, public_default as default, printer, utils };

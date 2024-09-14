@@ -43,7 +43,7 @@ class Dorian
       .spec
       .thor
       .watchr
-    ].freeze
+    ]
 
     RUBY_FILENAMES = %w[
       .irbrc
@@ -73,7 +73,7 @@ class Dorian
       Vagabondfile
       Vagrantfile
       buildfile
-    ].freeze
+    ]
 
     VERSION = File.read(File.expand_path("../../VERSION", __dir__))
 
@@ -355,14 +355,43 @@ class Dorian
     end
 
     def command_format
-      root = File.expand_path("../../../", __dir__)
-      prettier_path = File.join(root, "node_modules/prettier/standalone.js")
-      prettier_js = File.read(prettier_path)
-      parser_path = File.join(root, "node_modules/prettier/plugins/babel.js")
-      parser_js = File.read(parser_path)
       context = MiniRacer::Context.new
+      context.attach("puts", proc { |string| puts(string) })
+      context.attach("warn", proc { |string| warn(string) })
+      context.attach("read", proc { |path| File.read(path) })
+      context.attach(
+        "write",
+        proc { |path, content| File.write(filename, content) }
+      )
+      root = File.expand_path("../../", __dir__)
+      prettier_path = File.join(root, "vendor/prettier/standalone.js")
+      babel_path = File.join(root, "vendor/prettier/plugins/babel.js")
+      estree_path = File.join(root, "vendor/prettier/plugins/estree.js")
+      prettier_js = File.read(prettier_path)
+      babel_js = File.read(babel_path)
+      estree_js = File.read(estree_path)
       context.eval(prettier_js)
-      context.eval(parser_js)
+      context.eval("module = { exports: {} }; exports = module.exports")
+      context.eval(babel_js)
+      context.eval("babel = module.exports;")
+      context.eval("module = { exports: {} }; exports = module.exports")
+      context.eval(estree_js)
+      context.eval("estree = module.exports;")
+      context.eval("plugins = [babel, estree];")
+      context.eval(<<~JS)
+        format = async (path, parser) => {
+          try {
+            const before = read(path);
+            const after = await prettier.format(before, { parser, plugins });
+            if (before != after) {
+              puts(path);
+              write(path, after);
+            }
+          } catch (e) {
+            warn(`failed to parse ${path}: ${e.message.split("\\n")[0]}`);
+          }
+        };
+      JS
 
       Git.open(".").ls_files.map(&:first).each { |file| format(file, context:) }
     end
@@ -421,7 +450,7 @@ class Dorian
       down = "│   "
       down_and_right = "├── "
 
-      git_ls_files = ->(path) { Git.open(".").ls_files(path).map(&:first) }
+      git_ls_files = lambda { |path| Git.open(".").ls_files(path).map(&:first) }
 
       group =
         lambda do |files|
@@ -1351,11 +1380,9 @@ class Dorian
       return :env if path == ".env"
       return :env if path.start_with?(".env.")
       return unless File.exist?(path)
-
       first_line = File.open(path, &:gets).to_s
       first_line = first_line.encode("UTF-8", invalid: :replace)
       return :ruby if /\A#!.*ruby\z/.match?(first_line)
-
       false
     end
 
@@ -1463,7 +1490,6 @@ class Dorian
     def format(path, context:)
       return if File.symlink?(path)
       return unless File.exist?(path)
-
       before = File.read(path)
 
       case filetype(path)
@@ -1480,21 +1506,7 @@ class Dorian
       when :yaml
         after = sort(YAML.safe_load(before)).to_yaml
       when :js
-        promise = context.eval(<<~JS)
-          prettier.format(#{before.to_json}, { "parser": "babel" })
-        JS
-        p promise
-        p promise.class
-        after = before
-        loop do
-          if promise.fulfilled?
-            after = promise.value
-          elsif promise.rejected?
-            raise promise.reason
-          else
-            sleep(0.01)
-          end
-        end
+        context.eval("format(#{path.to_json}, 'babel')")
       end
 
       if after && before != after

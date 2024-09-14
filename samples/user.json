@@ -21,7 +21,11 @@
     "profile": {
       "age": 30,
       "gender": "male",
-      "interests": ["reading", "coding", "hiking"]
+      "interests": [
+        "reading",
+        "coding",
+        "hiking"
+      ]
     }
   }
 }

@@ -1,27 +1,27 @@
 {
   "user": {
-    "id": 12345,
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "is_active": true,
-    "profile": {
-      "age": 30,
-      "gender": "male",
-      "interests": ["reading", "coding", "hiking"]
-    },
+    "account_created": "2021-05-20T14:30:00Z",
     "address": {
-      "street": "123 Main St",
       "city": "Anytown",
       "state": "CA",
+      "street": "123 Main St",
       "zip_code": "12345"
     },
-    "account_created": "2021-05-20T14:30:00Z",
+    "email": "john.doe@example.com",
+    "id": 12345,
+    "is_active": true,
+    "name": "John Doe",
     "preferences": {
       "newsletter": true,
       "notifications": {
         "email": true,
         "sms": false
       }
+    },
+    "profile": {
+      "age": 30,
+      "gender": "male",
+      "interests": ["reading", "coding", "hiking"]
     }
   }
 }

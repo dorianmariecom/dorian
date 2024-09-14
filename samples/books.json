@@ -1,23 +1,23 @@
 [
   {
-    "title": "The Great Gatsby",
     "author": "F. Scott Fitzgerald",
-    "published_year": 1925,
+    "available": true,
     "genres": ["Novel", "Historical"],
-    "available": true
+    "published_year": 1925,
+    "title": "The Great Gatsby"
   },
   {
-    "title": "To Kill a Mockingbird",
     "author": "Harper Lee",
-    "published_year": 1960,
+    "available": false,
     "genres": ["Novel", "Southern Gothic", "Bildungsroman"],
-    "available": false
+    "published_year": 1960,
+    "title": "To Kill a Mockingbird"
   },
   {
-    "title": "1984",
     "author": "George Orwell",
-    "published_year": 1949,
+    "available": true,
     "genres": ["Dystopian", "Political Fiction"],
-    "available": true
+    "published_year": 1949,
+    "title": "1984"
   }
 ]

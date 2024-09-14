@@ -9,6 +9,7 @@ PATH
       dorian-to_struct
       git
       json
+      mini_racer
       ostruct
       parallel
       terminal-table
@@ -57,7 +58,12 @@ GEM
       concurrent-ruby (~> 1.0)
     json (2.7.2)
     language_server-protocol (3.17.0.3)
+    libv8-node (18.19.0.0)
+    libv8-node (18.19.0.0-arm64-darwin)
+    libv8-node (18.19.0.0-x86_64-linux)
     logger (1.6.1)
+    mini_racer (0.16.0)
+      libv8-node (~> 18.19.0.0)
     minitest (5.25.1)
     ostruct (0.6.0)
     parallel (1.26.3)

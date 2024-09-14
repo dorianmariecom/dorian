@@ -1,22 +1,22 @@
 ---
-app_config:
-  name: My Web App
-  version: 1.0.0
-  environment: production
-  debug_mode: false
-database:
-  host: localhost
-  port: 5432
-  username: db_user
-  name: my_web_app_db
-logging:
-  level: info
-  log_to_file: true
-  file_path: "/var/log/my_web_app.log"
-features:
-  authentication: true
-  api: true
-  web_sockets: false
 allowed_hosts:
   - example.com
   - api.example.com
+app_config:
+  debug_mode: false
+  environment: production
+  name: My Web App
+  version: 1.0.0
+database:
+  host: localhost
+  name: my_web_app_db
+  port: 5432
+  username: db_user
+features:
+  api: true
+  authentication: true
+  web_sockets: false
+logging:
+  file_path: "/var/log/my_web_app.log"
+  level: info
+  log_to_file: true

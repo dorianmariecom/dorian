@@ -1,27 +1,27 @@
 ---
-- name: Alice Johnson
-  id: 101
-  department: Engineering
-  role: Software Engineer
+- department: Engineering
   full_time: true
+  id: 101
+  name: Alice Johnson
+  role: Software Engineer
   skills:
     - Python
     - Ruby
     - JavaScript
-- name: Bob Smith
-  id: 102
-  department: Marketing
-  role: Marketing Specialist
+- department: Marketing
   full_time: false
+  id: 102
+  name: Bob Smith
+  role: Marketing Specialist
   skills:
     - SEO
     - Content Writing
     - Social Media
-- name: Charlie Brown
-  id: 103
-  department: Human Resources
-  role: HR Manager
+- department: Human Resources
   full_time: true
+  id: 103
+  name: Charlie Brown
+  role: HR Manager
   skills:
     - Recruitment
     - Employee Relations

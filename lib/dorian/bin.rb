@@ -7,14 +7,74 @@ require "dorian/progress"
 require "dorian/to_struct"
 require "git"
 require "json"
+require "mini_racer"
 require "net/http"
 require "parallel"
+require "syntax_tree"
 require "terminal-table"
 require "uri"
 require "yaml"
 
 class Dorian
   class Bin
+    RUBY_EXTENSIONS = %w[
+      .rb
+      .arb
+      .axlsx
+      .builder
+      .fcgi
+      .gemfile
+      .gemspec
+      .god
+      .jb
+      .jbuilder
+      .mspec
+      .opal
+      .pluginspec
+      .podspec
+      .rabl
+      .rake
+      .rbuild
+      .rbw
+      .rbx
+      .ru
+      .ruby
+      .schema
+      .spec
+      .thor
+      .watchr
+    ].freeze
+
+    RUBY_FILENAMES = %w[
+      .irbrc
+      .pryrc
+      .simplecov
+      Appraisals
+      Berksfile
+      Brewfile
+      Buildfile
+      Capfile
+      Cheffile
+      Dangerfile
+      Deliverfile
+      Fastfile
+      Gemfile
+      Guardfile
+      Jarfile
+      Mavenfile
+      Podfile
+      Puppetfile
+      Rakefile
+      rakefile
+      Schemafile
+      Snapfile
+      Steepfile
+      Thorfile
+      Vagabondfile
+      Vagrantfile
+      buildfile
+    ].freeze
+
     VERSION = File.read(File.expand_path("../../VERSION", __dir__))
 
     DEFAULT_IO = :raw
@@ -275,11 +335,36 @@ class Dorian
         arguments.delete("tree")
         @command = :tree
         command_tree
+      when :format
+        arguments.delete("format")
+        @command = :format
+        command_format
+      when :pretty
+        arguments.delete("pretty")
+        @command = :pretty
+        command_pretty
       else
         arguments.delete("read")
         @command = :read
         command_read
       end
+    end
+
+    def command_pretty
+      command_format
+    end
+
+    def command_format
+      root = File.expand_path("../../../", __dir__)
+      prettier_path = File.join(root, "node_modules/prettier/standalone.js")
+      prettier_js = File.read(prettier_path)
+      parser_path = File.join(root, "node_modules/prettier/plugins/babel.js")
+      parser_js = File.read(parser_path)
+      context = MiniRacer::Context.new
+      context.eval(prettier_js)
+      context.eval(parser_js)
+
+      Git.open(".").ls_files.map(&:first).each { |file| format(file, context:) }
     end
 
     def command_release
@@ -323,7 +408,7 @@ class Dorian
               :count => command_count,
               :percent =>
                 "#{(command_count * 100 / history.size.to_f).round(3)}%",
-              :command =>
+              :command => command
             }
           end
           .first(limit)
@@ -336,7 +421,7 @@ class Dorian
       down = "│   "
       down_and_right = "├── "
 
-      git_ls_files = lambda { |path| Git.open(".").ls_files(path).map(&:first) }
+      git_ls_files = ->(path) { Git.open(".").ls_files(path).map(&:first) }
 
       group =
         lambda do |files|
@@ -1233,77 +1318,61 @@ class Dorian
       Tiktoken.encoding_for_model("gpt-4o")
     end
 
+    def filetype(path)
+      ext = File.extname(path).to_s.downcase
+      return :directory if Dir.exist?(path)
+      return :symlink if File.symlink?(path)
+      return :ruby if RUBY_FILENAMES.include?(path)
+      return :ruby if RUBY_EXTENSIONS.include?(ext)
+      return :json if ext == ".json"
+      return :jsonl if ext == ".jsonl"
+      return :yaml if ext == ".yaml"
+      return :yaml if ext == ".yml"
+      return :csv if ext == ".csv"
+      return :js if ext == ".js"
+      return :css if ext == ".css"
+      return :html if ext == ".html"
+      return :html if ext == ".htm"
+      return :haml if ext == ".haml"
+      return :slim if ext == ".slim"
+      return :erb if ext == ".erb"
+      return :fish if ext == ".fish"
+      return :sql if ext == ".sql"
+      return :tex if ext == ".tex"
+      return :md if ext == ".md"
+      return :md if ext == ".markdown"
+      return :png if ext == ".png"
+      return :jpeg if ext == ".jpg"
+      return :jpeg if ext == ".jpeg"
+      return :ico if ext == ".ico"
+      return :webp if ext == ".webp"
+      return :heic if ext == ".heic"
+      return :pdf if ext == ".pdf"
+      return :env if path == ".env"
+      return :env if path.start_with?(".env.")
+      return unless File.exist?(path)
+
+      first_line = File.open(path, &:gets).to_s
+      first_line = first_line.encode("UTF-8", invalid: :replace)
+      return :ruby if /\A#!.*ruby\z/.match?(first_line)
+
+      false
+    end
+
     def match_filetypes?(path, filetypes: arguments)
       return true if filetypes.none?
       return true unless filetypes.intersect?(%w[rb ruby])
-
-      ruby_extensions = %w[
-        .rb
-        .arb
-        .axlsx
-        .builder
-        .fcgi
-        .gemfile
-        .gemspec
-        .god
-        .jb
-        .jbuilder
-        .mspec
-        .opal
-        .pluginspec
-        .podspec
-        .rabl
-        .rake
-        .rbuild
-        .rbw
-        .rbx
-        .ru
-        .ruby
-        .schema
-        .spec
-        .thor
-        .watchr
-      ]
-
-      ruby_filenames = %w[
-        .irbrc
-        .pryrc
-        .simplecov
-        Appraisals
-        Berksfile
-        Brewfile
-        Buildfile
-        Capfile
-        Cheffile
-        Dangerfile
-        Deliverfile
-        Fastfile
-        Gemfile
-        Guardfile
-        Jarfile
-        Mavenfile
-        Podfile
-        Puppetfile
-        Rakefile
-        rakefile
-        Schemafile
-        Snapfile
-        Steepfile
-        Thorfile
-        Vagabondfile
-        Vagrantfile
-        buildfile
-      ]
-
       return false if Dir.exist?(path)
-      return true if ruby_filenames.include?(path)
-      return true if ruby_extensions.include?(File.extname(path))
+      return true if RUBY_FILENAMES.include?(path)
+      return true if RUBY_EXTENSIONS.include?(File.extname(path))
       return false unless File.exist?(path)
 
-      first_line =
-        File.open(path, &:gets).to_s.encode("UTF-8", invalid: :replace)
+      first_line = File.open(path, &:gets).to_s
+      first_line = first_line.encode("UTF-8", invalid: :replace)
 
-      /\A#!.*ruby\z/.match?(first_line)
+      return true if /\A#!.*ruby\z/.match?(first_line)
+
+      false
     end
 
     def pluck(element)
@@ -1373,6 +1442,67 @@ class Dorian
         fast:,
         returns:
       ).returned
+    end
+
+    def sort(object)
+      object = object.from_deep_struct
+
+      if object.is_a?(Hash)
+        object
+          .to_a
+          .sort_by(&:first)
+          .to_h
+          .transform_values { |value| sort(value) }
+      elsif object.is_a?(Array)
+        object.map { |element| sort(element) }
+      else
+        object
+      end
+    end
+
+    def format(path, context:)
+      return if File.symlink?(path)
+      return unless File.exist?(path)
+
+      before = File.read(path)
+
+      case filetype(path)
+      when :directory
+      when :ruby
+        after = SyntaxTree.format(before)
+      when :json
+        after = JSON.pretty_generate(sort(JSON.parse(before)))
+      when :jsonl
+        after = before.lines.map { |line| JSON.parse(line).to_json }.join("\n")
+      when :csv
+        after =
+          CSV.generate { |csv| CSV.parse(before).each { |row| csv << row } }
+      when :yaml
+        after = sort(YAML.safe_load(before)).to_yaml
+      when :js
+        promise = context.eval(<<~JS)
+          prettier.format(#{before.to_json}, { "parser": "babel" })
+        JS
+        p promise
+        p promise.class
+        after = before
+        loop do
+          if promise.fulfilled?
+            after = promise.value
+          elsif promise.rejected?
+            raise promise.reason
+          else
+            sleep(0.01)
+          end
+        end
+      end
+
+      if after && before != after
+        puts path
+        File.write(path, after)
+      end
+    rescue StandardError => e
+      warn "failed to parse #{path}: #{e.message}"
     end
   end
 end

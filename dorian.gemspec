@@ -18,11 +18,16 @@ Gem::Specification.new do |s|
   s.add_dependency "dorian-progress"
   s.add_dependency "dorian-to_struct"
   s.add_dependency "git"
+  s.add_dependency "hexapdf"
   s.add_dependency "json"
+  s.add_dependency "mini_magick"
   s.add_dependency "mini_racer"
   s.add_dependency "ostruct"
   s.add_dependency "parallel"
+  s.add_dependency "syntax_tree"
+  s.add_dependency "syntax_tree-haml"
   s.add_dependency "terminal-table"
+  s.add_dependency "w_syntax_tree-erb"
   s.add_dependency "yaml"
 
   s.metadata = { "rubygems_mfa_required" => "true" }

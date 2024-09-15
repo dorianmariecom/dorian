@@ -6,11 +6,17 @@ require "dorian/eval"
 require "dorian/progress"
 require "dorian/to_struct"
 require "git"
+require "hexapdf"
 require "json"
+require "mini_magick"
 require "mini_racer"
 require "net/http"
 require "parallel"
+require "shellwords"
 require "syntax_tree"
+require "syntax_tree/erb"
+require "syntax_tree/haml"
+require "tempfile"
 require "terminal-table"
 require "uri"
 require "yaml"
@@ -366,16 +372,23 @@ class Dorian
 
       root = File.expand_path("../../", __dir__)
 
+      sql_path = File.join(root, "vendor/sql-formatter.js")
+      sql_js = File.read(sql_path)
+      context.eval("self = {};")
+      context.eval(sql_js)
+      context.eval("sqlFormatter = self.sqlFormatter;")
+
       prettier_path = File.join(root, "vendor/prettier/standalone.js")
       prettier_js = File.read(prettier_path)
-
       context.eval(prettier_js)
-      plugins = %w[babel estree typescript html markdown]
+
+      plugins = %w[babel estree typescript postcss html markdown]
 
       plugins.each do |plugin|
         path = File.join(root, "vendor/prettier/plugins/#{plugin}.js")
         js = File.read(path)
-        context.eval("module = { exports: {} }; exports = module.exports")
+        context.eval("module = { exports: {} };")
+        context.eval("exports = module.exports;")
         context.eval(js)
         context.eval("#{plugin} = module.exports;")
       end
@@ -386,7 +399,14 @@ class Dorian
         format = async (path, parser) => {
           try {
             const before = read(path);
-            const after = await prettier.format(before, { parser, plugins });
+            let after;
+
+            if (parser === "sql") {
+              after = sqlFormatter.format(before, { parser, plugins });
+            } else {
+              after = await prettier.format(before, { parser, plugins });
+            }
+
             if (before != after) {
               puts(path);
               write(path, after);
@@ -397,7 +417,11 @@ class Dorian
         };
       JS
 
-      Git.open(".").ls_files.map(&:first).each { |file| format(file, context:) }
+      if files.any?
+        each(files) { |file| format(file, context:) }
+      else
+        each(Git.open(".").ls_files.map(&:first)) { |file| format(file, context:) }
+      end
     end
 
     def command_release
@@ -904,12 +928,14 @@ class Dorian
           end.join
       when :json
         pretty? ? JSON.pretty_generate(content) : content.to_json
-      when :jsonl, :yamll
-        map(content, &:to_json).join("\n")
+      when :jsonl
+        map(content, &:to_json).join("\n") + "\n"
       when :raw
         content
       when :yaml
         content.to_yaml
+      when :yamll
+        map(map(content, &:to_yaml), &:to_json).join("\n") + "\n"
       else
         abort "#{output.inspect} not supported"
       end
@@ -925,12 +951,16 @@ class Dorian
         end
       when :json
         JSON.parse(content).to_deep_struct
-      when :jsonl, :yamll
+      when :jsonl
         map(content.lines) { |line| JSON.parse(line) }.to_deep_struct
       when :raw
         content
       when :yaml
         YAML.safe_load(content).to_deep_struct
+      when :yamll
+        map(content.lines) do |line|
+          YAML.safe_load(JSON.parse(line))
+        end.to_deep_struct
       else
         abort "#{input.inspect} not supported"
       end
@@ -1351,48 +1381,6 @@ class Dorian
       Tiktoken.encoding_for_model("gpt-4o")
     end
 
-    def filetype(path)
-      ext = File.extname(path).to_s.downcase
-      return :directory if Dir.exist?(path)
-      return :symlink if File.symlink?(path)
-      return :ruby if RUBY_FILENAMES.include?(path)
-      return :ruby if RUBY_EXTENSIONS.include?(ext)
-      return :json if ext == ".json"
-      return :jsonl if ext == ".jsonl"
-      return :yaml if ext == ".yaml"
-      return :yaml if ext == ".yml"
-      return :csv if ext == ".csv"
-      return :js if ext == ".js"
-      return :js if ext == ".mjs"
-      return :js if ext == ".cjs"
-      return :ts if ext == ".ts"
-      return :css if ext == ".css"
-      return :html if ext == ".html"
-      return :html if ext == ".htm"
-      return :haml if ext == ".haml"
-      return :slim if ext == ".slim"
-      return :erb if ext == ".erb"
-      return :fish if ext == ".fish"
-      return :sql if ext == ".sql"
-      return :tex if ext == ".tex"
-      return :md if ext == ".md"
-      return :md if ext == ".markdown"
-      return :png if ext == ".png"
-      return :jpeg if ext == ".jpg"
-      return :jpeg if ext == ".jpeg"
-      return :ico if ext == ".ico"
-      return :webp if ext == ".webp"
-      return :heic if ext == ".heic"
-      return :pdf if ext == ".pdf"
-      return :env if path == ".env"
-      return :env if path.start_with?(".env.")
-      return unless File.exist?(path)
-      first_line = File.open(path, &:gets).to_s
-      first_line = first_line.encode("UTF-8", invalid: :replace)
-      return :ruby if first_line == "#!/usr/bin/env ruby\n"
-      nil
-    end
-
     def match_filetypes?(path, filetypes: arguments)
       return true if filetypes.none?
       return true unless filetypes.intersect?(%w[rb ruby])
@@ -1494,6 +1482,58 @@ class Dorian
       end
     end
 
+    def filetype(path)
+      ext = File.extname(path).to_s.downcase
+      return :directory if Dir.exist?(path)
+      return :symlink if File.symlink?(path)
+      return :ruby if RUBY_FILENAMES.include?(File.basename(path))
+      return :ruby if RUBY_EXTENSIONS.include?(ext)
+      return :json if ext == ".json"
+      return :jsonl if ext == ".jsonl"
+      return :yaml if ext == ".yaml"
+      return :yaml if ext == ".yml"
+      return :yamll if ext == ".yamll"
+      return :yamll if ext == ".ymll"
+      return :csv if ext == ".csv"
+      return :js if ext == ".js"
+      return :js if ext == ".mjs"
+      return :js if ext == ".cjs"
+      return :ts if ext == ".ts"
+      return :css if ext == ".css"
+      return :html if ext == ".html"
+      return :html if ext == ".htm"
+      return :haml if ext == ".haml"
+      return :slim if ext == ".slim"
+      return :erb if ext == ".erb"
+      return :fish if ext == ".fish"
+      return :sql if ext == ".sql"
+      return :tex if ext == ".tex"
+      return :md if ext == ".md"
+      return :md if ext == ".markdown"
+      return :png if ext == ".png"
+      return :jpeg if ext == ".jpg"
+      return :jpeg if ext == ".jpeg"
+      return :ico if ext == ".ico"
+      return :webp if ext == ".webp"
+      return :heic if ext == ".heic"
+      return :pdf if ext == ".pdf"
+      return :raw if ext == ".raw"
+      return :env if path == ".env"
+      return :env if path.start_with?(".env.")
+      return :sh if path == "Dockerfile"
+      return :sh if ext == ".sh"
+      return :env if ext == ".enc"
+      return :txt if ext == ".txt"
+      return unless File.exist?(path)
+      first_line = File.open(path, &:gets).to_s
+      first_line = first_line.encode("UTF-8", invalid: :replace).strip
+      return :ruby if first_line == "#!/usr/bin/env ruby"
+      return :sh if first_line == "#!/bin/bash"
+      return :sh if first_line == "#!/bin/bash -e"
+      return :sh if first_line == "#!/usr/bin/env sh"
+      nil
+    end
+
     def format(path, context:)
       return if File.symlink?(path)
       return unless File.exist?(path)
@@ -1503,6 +1543,10 @@ class Dorian
       when :directory
       when :ruby
         after = SyntaxTree.format(before)
+      when :haml
+        after = SyntaxTree::Haml.format(before)
+      when :erb
+        after = SyntaxTree::ERB.format(before)
       when :json
         after = JSON.pretty_generate(sort(JSON.parse(before)))
       when :jsonl
@@ -1512,10 +1556,61 @@ class Dorian
           CSV.generate { |csv| CSV.parse(before).each { |row| csv << row } }
       when :yaml
         after = sort(YAML.safe_load(before)).to_yaml
+      when :yamll
+        after =
+          before
+            .lines
+            .map do |line|
+              sort(YAML.safe_load(JSON.parse(line))).to_yaml.to_json
+            end
+            .join("\n") + "\n"
       when :js
         context.eval("format(#{path.to_json}, 'babel')")
       when :ts
         context.eval("format(#{path.to_json}, 'typescript')")
+      when :html
+        context.eval("format(#{path.to_json}, 'html')")
+      when :md
+        context.eval("format(#{path.to_json}, 'markdown')")
+      when :css
+        context.eval("format(#{path.to_json}, 'css')")
+      when :slim, :fish
+        # unsupported
+      when :sql
+        context.eval("format(#{path.to_json}, 'sql')")
+      when :sh
+        if system("command -v shfmt > /dev/null 2>&1")
+          command = ["shfmt", "--indent", "4", path].shelljoin
+          stdout, stderr, status = Open3.capture3(command)
+          if stderr.empty? && status.success?
+            after = stdout
+          else
+            raise stderr
+          end
+        else
+          warn "run: `brew install shfmt` for #{path}"
+        end
+      when :raw, :directory, :symlink, :env, :enc, :txt
+      when :png, :jpeg, :webp, :heic, :ico
+        image = MiniMagick::Image.open(path)
+        image.strip
+        image.write(path)
+        after = File.read(path)
+      when :pdf
+        doc = HexaPDF::Document.open(path)
+        doc.trailer.info.each { |key, value| doc.trailer.info.delete(key) }
+        doc.write(path, update_fields: false)
+        after = File.read(path)
+      else
+        case File.basename(path)
+        when ".gitignore", ".node-version", ".prettierignore", ".ruby-version",
+             ".tool-versions", "Gemfile.lock", "LICENSE", "VERSION", ".rspec",
+             "Procfile", "Procfile.dev", "Podfile.lock", "xcode.env", "CNAME"
+        when ".keep"
+          File.write(path, "")
+        else
+          puts "unhandled: #{path}"
+        end
       end
 
       if after && before != after

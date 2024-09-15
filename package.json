@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "prettier": "*"
+    "prettier": "*",
+    "prettier-plugin-latex": "*"
   },
   "engines": {
     "node": "22.5.1",

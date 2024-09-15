@@ -16,6 +16,9 @@ require "shellwords"
 require "syntax_tree"
 require "syntax_tree/erb"
 require "syntax_tree/haml"
+require "syntax_tree/xml"
+require "syntax_tree/json"
+require "syntax_tree/css"
 require "tempfile"
 require "terminal-table"
 require "uri"
@@ -372,17 +375,24 @@ class Dorian
 
       root = File.expand_path("../../", __dir__)
 
+      prettier_path = File.join(root, "vendor/prettier/standalone.js")
+      prettier_js = File.read(prettier_path)
+      context.eval(prettier_js)
+
       sql_path = File.join(root, "vendor/sql-formatter.js")
       sql_js = File.read(sql_path)
       context.eval("self = {};")
       context.eval(sql_js)
       context.eval("sqlFormatter = self.sqlFormatter;")
 
-      prettier_path = File.join(root, "vendor/prettier/standalone.js")
-      prettier_js = File.read(prettier_path)
-      context.eval(prettier_js)
+      groovy_path = File.join(root, "vendor/groovy-beautify/dist/cjs/index.js")
+      groovy_js = File.read(groovy_path)
+      context.eval("module = { exports: {} };")
+      context.eval("exports = module.exports;")
+      context.eval(groovy_js)
+      context.eval("groovyBeautify = module.exports;")
 
-      plugins = %w[babel estree typescript postcss html markdown]
+      plugins = %w[babel estree typescript html markdown]
 
       plugins.each do |plugin|
         path = File.join(root, "vendor/prettier/plugins/#{plugin}.js")
@@ -402,7 +412,9 @@ class Dorian
             let after;
 
             if (parser === "sql") {
-              after = sqlFormatter.format(before, { parser, plugins });
+              after = sqlFormatter.format(before);
+            } else if (parser === "groovy") {
+              after = groovyBeautify(before);
             } else {
               after = await prettier.format(before, { parser, plugins });
             }
@@ -420,7 +432,9 @@ class Dorian
       if files.any?
         each(files) { |file| format(file, context:) }
       else
-        each(Git.open(".").ls_files.map(&:first)) { |file| format(file, context:) }
+        each(
+          Git.open(".").ls_files.map(&:first)
+        ) { |file| format(file, context:) }
       end
     end
 
@@ -1522,8 +1536,14 @@ class Dorian
       return :env if path.start_with?(".env.")
       return :sh if path == "Dockerfile"
       return :sh if ext == ".sh"
-      return :env if ext == ".enc"
+      return :enc if ext == ".enc"
+      return :enc if ext == ".keystore"
+      return :pro if ext == ".pro"
       return :txt if ext == ".txt"
+      return :xml if ext == ".xml"
+      return :xml if ext == ".plist"
+      return :xml if ext == ".storyboard"
+      return :groovy if ext == ".gradle"
       return unless File.exist?(path)
       first_line = File.open(path, &:gets).to_s
       first_line = first_line.encode("UTF-8", invalid: :replace).strip
@@ -1548,7 +1568,11 @@ class Dorian
       when :erb
         after = SyntaxTree::ERB.format(before)
       when :json
-        after = JSON.pretty_generate(sort(JSON.parse(before)))
+        after = SyntaxTree::JSON.format(before)
+      when :xml
+        after = SyntaxTree::XML.format(before)
+      when :css
+        after = SyntaxTree::CSS.format(before)
       when :jsonl
         after = before.lines.map { |line| JSON.parse(line).to_json }.join("\n")
       when :csv
@@ -1572,8 +1596,6 @@ class Dorian
         context.eval("format(#{path.to_json}, 'html')")
       when :md
         context.eval("format(#{path.to_json}, 'markdown')")
-      when :css
-        context.eval("format(#{path.to_json}, 'css')")
       when :slim, :fish
         # unsupported
       when :sql
@@ -1590,7 +1612,7 @@ class Dorian
         else
           warn "run: `brew install shfmt` for #{path}"
         end
-      when :raw, :directory, :symlink, :env, :enc, :txt
+      when :raw, :directory, :symlink, :env, :enc, :txt, :pro
       when :png, :jpeg, :webp, :heic, :ico
         image = MiniMagick::Image.open(path)
         image.strip
@@ -1601,11 +1623,25 @@ class Dorian
         doc.trailer.info.each { |key, value| doc.trailer.info.delete(key) }
         doc.write(path, update_fields: false)
         after = File.read(path)
+      when :tex
+        if system("command -v latexindent > /dev/null 2>&1")
+          command = ["latexindent", path, "--logfile", "/dev/null"].shelljoin
+          stdout, stderr, status = Open3.capture3(command)
+          if stderr.empty? && status.success?
+            after = stdout.gsub("\t", "  ")
+          else
+            raise stderr
+          end
+        else
+          warn "run: `brew install latexindent` for #{path}"
+        end
+      when :groovy
+        context.eval("format(#{path.to_json}, 'groovy')")
       else
         case File.basename(path)
         when ".gitignore", ".node-version", ".prettierignore", ".ruby-version",
              ".tool-versions", "Gemfile.lock", "LICENSE", "VERSION", ".rspec",
-             "Procfile", "Procfile.dev", "Podfile.lock", "xcode.env", "CNAME"
+             "Procfile", "Procfile.dev", "Podfile.lock", ".xcode.env", "CNAME"
         when ".keep"
           File.write(path, "")
         else

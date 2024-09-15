@@ -1,11 +1,5 @@
 {
-  "dependencies": {
-    "prettier": "*",
-    "prettier-plugin-latex": "*"
-  },
-  "engines": {
-    "node": "22.5.1",
-    "npm": "10.8.2"
-  },
+  "dependencies": { "groovy-beautify": "*", "prettier": "*" },
+  "engines": { "node": "22.5.1", "npm": "10.8.2" },
   "license": "MIT"
 }

@@ -1544,6 +1544,7 @@ class Dorian
       return :xml if ext == ".plist"
       return :xml if ext == ".storyboard"
       return :groovy if ext == ".gradle"
+      return :groovy if ext == ".properties"
       return unless File.exist?(path)
       first_line = File.open(path, &:gets).to_s
       first_line = first_line.encode("UTF-8", invalid: :replace).strip
@@ -1567,12 +1568,12 @@ class Dorian
         after = SyntaxTree::Haml.format(before)
       when :erb
         after = SyntaxTree::ERB.format(before)
-      when :json
-        after = SyntaxTree::JSON.format(before)
       when :xml
         after = SyntaxTree::XML.format(before)
       when :css
         after = SyntaxTree::CSS.format(before)
+      when :json
+        after = JSON.pretty_generate(JSON.parse(before))
       when :jsonl
         after = before.lines.map { |line| JSON.parse(line).to_json }.join("\n")
       when :csv

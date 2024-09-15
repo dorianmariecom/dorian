@@ -27,7 +27,6 @@ Gem::Specification.new do |s|
   s.add_dependency "syntax_tree"
   s.add_dependency "syntax_tree-haml"
   s.add_dependency "syntax_tree-xml"
-  s.add_dependency "syntax_tree-json"
   s.add_dependency "syntax_tree-css"
   s.add_dependency "terminal-table"
   s.add_dependency "w_syntax_tree-erb"

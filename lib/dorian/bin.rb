@@ -1592,7 +1592,7 @@ class Dorian
           "#{before.lines.map { |line| JSON.parse(line).to_json }.join("\n")}\n"
       when :csv
         after =
-          "#{CSV.generate { |csv| CSV.parse(before).each { |row| csv << row } }}\n"
+          CSV.generate { |csv| CSV.parse(before).each { |row| csv << row } }
       when :yaml
         after = sort(YAML.safe_load(before)).to_yaml
       when :yamll

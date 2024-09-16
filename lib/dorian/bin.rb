@@ -8,7 +8,6 @@ require "dorian/to_struct"
 require "git"
 require "hexapdf"
 require "json"
-require "mini_magick"
 require "mini_racer"
 require "net/http"
 require "parallel"
@@ -18,7 +17,6 @@ require "syntax_tree/erb"
 require "syntax_tree/haml"
 require "syntax_tree/xml"
 require "syntax_tree/json"
-require "syntax_tree/css"
 require "tempfile"
 require "terminal-table"
 require "uri"
@@ -52,7 +50,7 @@ class Dorian
       .spec
       .thor
       .watchr
-    ]
+    ].freeze
 
     RUBY_FILENAMES = %w[
       .irbrc
@@ -82,7 +80,7 @@ class Dorian
       Vagabondfile
       Vagrantfile
       buildfile
-    ]
+    ].freeze
 
     VERSION = File.read(File.expand_path("../../VERSION", __dir__))
 
@@ -392,7 +390,7 @@ class Dorian
       context.eval(groovy_js)
       context.eval("groovyBeautify = module.exports;")
 
-      plugins = %w[babel estree typescript html markdown]
+      plugins = %w[babel estree typescript html postcss markdown]
 
       plugins.each do |plugin|
         path = File.join(root, "vendor/prettier/plugins/#{plugin}.js")
@@ -492,7 +490,7 @@ class Dorian
       down = "│   "
       down_and_right = "├── "
 
-      git_ls_files = lambda { |path| Git.open(".").ls_files(path).map(&:first) }
+      git_ls_files = ->(path) { Git.open(".").ls_files(path).map(&:first) }
 
       group =
         lambda do |files|
@@ -943,13 +941,13 @@ class Dorian
       when :json
         pretty? ? JSON.pretty_generate(content) : content.to_json
       when :jsonl
-        map(content, &:to_json).join("\n") + "\n"
+        "#{map(content, &:to_json).join("\n")}\n"
       when :raw
         content
       when :yaml
         content.to_yaml
       when :yamll
-        map(map(content, &:to_yaml), &:to_json).join("\n") + "\n"
+        "#{map(map(content, &:to_yaml), &:to_json).join("\n")}\n"
       else
         abort "#{output.inspect} not supported"
       end
@@ -1540,24 +1538,41 @@ class Dorian
       return :enc if ext == ".keystore"
       return :pro if ext == ".pro"
       return :txt if ext == ".txt"
+      return :bat if ext == ".bat"
+      return :xcconfig if ext == ".xcconfig"
+      return :pbxproj if ext == ".pbxproj"
       return :xml if ext == ".xml"
       return :xml if ext == ".plist"
       return :xml if ext == ".storyboard"
+      return :xml if ext == ".xcscheme"
+      return :xml if ext == ".xcworkspacedata"
+      return :xml if ext == ".xcprivacy"
+      return :xml if ext == ".entitlements"
+      return :kotlin if ext == ".kt"
       return :groovy if ext == ".gradle"
       return :groovy if ext == ".properties"
+      return :binary if ext == ".jar"
+      return :objectivec if ext == ".h"
+      return :objectivec if ext == ".mm"
+      return :objectivec if ext == ".m"
       return unless File.exist?(path)
+
       first_line = File.open(path, &:gets).to_s
       first_line = first_line.encode("UTF-8", invalid: :replace).strip
       return :ruby if first_line == "#!/usr/bin/env ruby"
       return :sh if first_line == "#!/bin/bash"
+      return :sh if first_line == "#!/bin/sh"
       return :sh if first_line == "#!/bin/bash -e"
       return :sh if first_line == "#!/usr/bin/env sh"
+
       nil
     end
 
     def format(path, context:)
       return if File.symlink?(path)
+      return if File.directory?(path)
       return unless File.exist?(path)
+
       before = File.read(path)
 
       case filetype(path)
@@ -1570,8 +1585,6 @@ class Dorian
         after = SyntaxTree::ERB.format(before)
       when :xml
         after = SyntaxTree::XML.format(before)
-      when :css
-        after = SyntaxTree::CSS.format(before)
       when :json
         after = JSON.pretty_generate(JSON.parse(before))
       when :jsonl
@@ -1597,52 +1610,69 @@ class Dorian
         context.eval("format(#{path.to_json}, 'html')")
       when :md
         context.eval("format(#{path.to_json}, 'markdown')")
-      when :slim, :fish
-        # unsupported
       when :sql
         context.eval("format(#{path.to_json}, 'sql')")
+      when :groovy
+        context.eval("format(#{path.to_json}, 'groovy')")
+      when :css
+        context.eval("format(#{path.to_json}, 'css')")
       when :sh
         if system("command -v shfmt > /dev/null 2>&1")
           command = ["shfmt", "--indent", "4", path].shelljoin
           stdout, stderr, status = Open3.capture3(command)
-          if stderr.empty? && status.success?
-            after = stdout
-          else
-            raise stderr
-          end
+          raise stderr unless stderr.empty? && status.success?
+
+          after = stdout
         else
           warn "run: `brew install shfmt` for #{path}"
         end
-      when :raw, :directory, :symlink, :env, :enc, :txt, :pro
-      when :png, :jpeg, :webp, :heic, :ico
-        image = MiniMagick::Image.open(path)
-        image.strip
-        image.write(path)
-        after = File.read(path)
       when :pdf
         doc = HexaPDF::Document.open(path)
-        doc.trailer.info.each { |key, value| doc.trailer.info.delete(key) }
+        doc.trailer.info.each_key { |key| doc.trailer.info.delete(key) }
         doc.write(path, update_fields: false)
         after = File.read(path)
       when :tex
         if system("command -v latexindent > /dev/null 2>&1")
           command = ["latexindent", path, "--logfile", "/dev/null"].shelljoin
           stdout, stderr, status = Open3.capture3(command)
-          if stderr.empty? && status.success?
-            after = stdout.gsub("\t", "  ")
-          else
-            raise stderr
-          end
+          raise stderr unless stderr.empty? && status.success?
+
+          after = stdout.gsub("\t", "  ")
         else
           warn "run: `brew install latexindent` for #{path}"
         end
-      when :groovy
-        context.eval("format(#{path.to_json}, 'groovy')")
+      when :objectivec
+        if system("command -v clang-format > /dev/null 2>&1")
+          command = ["clang-format", path].shelljoin
+          stdout, stderr, status = Open3.capture3(command)
+          raise stderr unless stderr.empty? && status.success?
+
+          after = stdout.gsub("\t", "  ")
+        else
+          warn "run: `brew install clang-format` for #{path}"
+        end
+      when :kotlin
+        if system("command -v ktlint > /dev/null 2>&1")
+          command = ["ktlint", "-F", path].shelljoin
+          stdout, stderr, status = Open3.capture3(command)
+          raise stderr unless stderr.empty? && status.success?
+
+          after = File.read(path)
+        else
+          warn "run: `brew install ktlint` for #{path}"
+        end
+      when :raw, :directory, :symlink, :env, :enc, :txt, :pro, :binary, :slim,
+           :fish, :bat, :xcconfig, :pbxproj, :jpeg, :png, :webp, :heic, :ico
+        # nothing to do
       else
         case File.basename(path)
         when ".gitignore", ".node-version", ".prettierignore", ".ruby-version",
              ".tool-versions", "Gemfile.lock", "LICENSE", "VERSION", ".rspec",
-             "Procfile", "Procfile.dev", "Podfile.lock", ".xcode.env", "CNAME"
+             "Procfile", "Procfile.dev", "Podfile.lock", ".xcode.env", "CNAME",
+             "TODO", ".gitmodules", ".asdfrc", "config", ".dotignore", ".gemrc",
+             ".gitconfig", ".gitmessage", ".hushlogin", ".psqlrc", ".vimrc",
+             "DIRECTORIES"
+          # nothing to do
         when ".keep"
           File.write(path, "")
         else
@@ -1656,6 +1686,7 @@ class Dorian
       end
     rescue StandardError => e
       warn "failed to parse #{path}: #{e.message}"
+      binding.irb
     end
   end
 end

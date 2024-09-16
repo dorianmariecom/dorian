@@ -13,12 +13,19 @@
     "name": "John Doe",
     "preferences": {
       "newsletter": true,
-      "notifications": { "email": true, "sms": false }
+      "notifications": {
+        "email": true,
+        "sms": false
+      }
     },
     "profile": {
       "age": 30,
       "gender": "male",
-      "interests": ["reading", "coding", "hiking"]
+      "interests": [
+        "reading",
+        "coding",
+        "hiking"
+      ]
     }
   }
 }

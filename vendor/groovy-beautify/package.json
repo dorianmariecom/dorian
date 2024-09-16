@@ -11,7 +11,11 @@
     "import": "./dist/es/index.js",
     "default": "./dist/es/index.js"
   },
-  "files": ["dist/**/*.json", "dist/**/*.js", "dist/**/*.ts"],
+  "files": [
+    "dist/**/*.json",
+    "dist/**/*.js",
+    "dist/**/*.ts"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build && tsc --emitDeclarationOnly && prettier --write ./dist",
@@ -24,10 +28,16 @@
     "type": "git",
     "url": "git+https://github.com/joycollector/groovy-beautify.git"
   },
-  "keywords": ["groovy", "beautify", "beautifier"],
+  "keywords": [
+    "groovy",
+    "beautify",
+    "beautifier"
+  ],
   "author": "Sergei Kasoverskij",
   "license": "MIT",
-  "bugs": { "url": "https://github.com/joycollector/groovy-beautify/issues" },
+  "bugs": {
+    "url": "https://github.com/joycollector/groovy-beautify/issues"
+  },
   "homepage": "https://github.com/joycollector/groovy-beautify#readme",
   "devDependencies": {
     "@types/jest": "^28.1.3",

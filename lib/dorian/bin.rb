@@ -932,12 +932,13 @@ class Dorian
 
       case output
       when :csv
-        (headers_of(content) ? headers_of(content).to_csv : "") +
+        "#{headers_of(content)&.to_csv}#{
           map(content) do |element|
             CSV.generate(headers: headers_of(content)) do |csv|
               csv << wrap(element)
             end
           end.join
+        }"
       when :json
         pretty? ? JSON.pretty_generate(content) : content.to_json
       when :jsonl
@@ -1576,7 +1577,6 @@ class Dorian
       before = File.read(path)
 
       case filetype(path)
-      when :directory
       when :ruby
         after = SyntaxTree.format(before)
       when :haml
@@ -1588,20 +1588,23 @@ class Dorian
       when :json
         after = JSON.pretty_generate(JSON.parse(before))
       when :jsonl
-        after = before.lines.map { |line| JSON.parse(line).to_json }.join("\n")
+        after =
+          "#{before.lines.map { |line| JSON.parse(line).to_json }.join("\n")}\n"
       when :csv
         after =
-          CSV.generate { |csv| CSV.parse(before).each { |row| csv << row } }
+          "#{CSV.generate { |csv| CSV.parse(before).each { |row| csv << row } }}\n"
       when :yaml
         after = sort(YAML.safe_load(before)).to_yaml
       when :yamll
         after =
-          before
-            .lines
-            .map do |line|
-              sort(YAML.safe_load(JSON.parse(line))).to_yaml.to_json
-            end
-            .join("\n") + "\n"
+          "#{
+            before
+              .lines
+              .map do |line|
+                sort(YAML.safe_load(JSON.parse(line))).to_yaml.to_json
+              end
+              .join("\n")
+          }\n"
       when :js
         context.eval("format(#{path.to_json}, 'babel')")
       when :ts
@@ -1628,7 +1631,7 @@ class Dorian
         end
       when :pdf
         doc = HexaPDF::Document.open(path)
-        doc.trailer.info.each_key { |key| doc.trailer.info.delete(key) }
+        doc.trailer.info.each { |key, _| doc.trailer.info.delete(key) }
         doc.write(path, update_fields: false)
         after = File.read(path)
       when :tex
@@ -1661,8 +1664,8 @@ class Dorian
         else
           warn "run: `brew install ktlint` for #{path}"
         end
-      when :raw, :directory, :symlink, :env, :enc, :txt, :pro, :binary, :slim,
-           :fish, :bat, :xcconfig, :pbxproj, :jpeg, :png, :webp, :heic, :ico
+      when :raw, :env, :enc, :txt, :pro, :binary, :slim, :fish, :bat, :xcconfig,
+           :pbxproj, :jpeg, :png, :webp, :heic, :ico
         # nothing to do
       else
         case File.basename(path)
@@ -1686,7 +1689,6 @@ class Dorian
       end
     rescue StandardError => e
       warn "failed to parse #{path}: #{e.message}"
-      binding.irb
     end
   end
 end

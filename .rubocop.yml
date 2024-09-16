@@ -101,11 +101,15 @@ Security/Eval:
   Enabled: false
 Style/CaseEquality:
   Enabled: false
+Style/DocumentDynamicEvalDefinition:
+  Enabled: false
 Style/Documentation:
   Enabled: false
 Style/DoubleNegation:
   Enabled: false
 Style/EmptyMethod:
+  Enabled: false
+Style/HashEachMethods:
   Enabled: false
 Style/IfUnlessModifier:
   Enabled: false

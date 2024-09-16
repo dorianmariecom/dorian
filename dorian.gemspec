@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email = "dorian@dorianmarie.com"
   s.homepage = "https://github.com/dorianmariecom/dorian"
   s.license = "MIT"
-  s.files = %w[VERSION bin/dorian lib/dorian/bin.rb]
+  s.files = `git ls-files`.split("\n")
   s.executables << "dorian"
 
   s.add_dependency "csv"

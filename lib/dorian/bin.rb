@@ -1620,7 +1620,7 @@ class Dorian
         context.eval("format(#{path.to_json}, 'css')")
       when :sh
         if system("command -v shfmt > /dev/null 2>&1")
-          command = ["shfmt", "--indent", "4", path].shelljoin
+          command = ["shfmt", "-i", "4", path].shelljoin
           stdout, stderr, status = Open3.capture3(command)
           raise stderr unless stderr.empty? && status.success?
 

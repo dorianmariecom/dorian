@@ -1673,7 +1673,7 @@ class Dorian
              "Procfile", "Procfile.dev", "Podfile.lock", ".xcode.env", "CNAME",
              "TODO", ".gitmodules", ".asdfrc", "config", ".dotignore", ".gemrc",
              ".gitconfig", ".gitmessage", ".hushlogin", ".psqlrc", ".vimrc",
-             "DIRECTORIES"
+             "DIRECTORIES", ".npm-version"
           # nothing to do
         when ".keep"
           File.write(path, "")

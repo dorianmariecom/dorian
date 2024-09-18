@@ -49,7 +49,7 @@ GEM
     diff-lcs (1.5.1)
     dorian-arguments (1.2.2)
       bigdecimal
-    dorian-eval (1.4.3)
+    dorian-eval (1.5.0)
       yaml
     dorian-progress (1.1.2)
       ruby-progressbar

@@ -71,7 +71,7 @@ GEM
       openssl (>= 2.2.1)
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
-    json (2.7.4)
+    json (2.7.6)
     language_server-protocol (3.17.0.3)
     libv8-node (18.19.0.0)
     libv8-node (18.19.0.0-arm64-darwin)

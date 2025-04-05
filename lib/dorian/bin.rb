@@ -1630,7 +1630,7 @@ class Dorian
         end
       when :pdf
         doc = HexaPDF::Document.open(path)
-        doc.trailer.info.each { |key, _| doc.trailer.info.delete(key) }
+        doc.trailer.info.each_key { |key| doc.trailer.info.delete(key) }
         doc.write(path, update_fields: false)
         after = File.read(path)
       when :tex

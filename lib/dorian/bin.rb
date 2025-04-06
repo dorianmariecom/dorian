@@ -1550,7 +1550,7 @@ class Dorian
       return :xml if ext == ".entitlements"
       return :kotlin if ext == ".kt"
       return :groovy if ext == ".gradle"
-      return :groovy if ext == ".properties"
+      return nil if ext == ".properties"
       return :binary if ext == ".jar"
       return :objectivec if ext == ".h"
       return :objectivec if ext == ".mm"

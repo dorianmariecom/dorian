@@ -1497,7 +1497,7 @@ class Dorian
     def filetype(path)
       ext = File.extname(path).to_s.downcase
 
-      if File.exists?(".format-ignore")
+      if File.exist?(".format-ignore")
         return if File.read(".format-ignore").split.map(&:strip).include?(path)
       end
 

@@ -1496,6 +1496,11 @@ class Dorian
 
     def filetype(path)
       ext = File.extname(path).to_s.downcase
+
+      if File.exists?(".format-ignore")
+        return if File.read(".format-ignore").split.map(&:strip).include?(path)
+      end
+
       return :directory if Dir.exist?(path)
       return :symlink if File.symlink?(path)
       return :ruby if RUBY_FILENAMES.include?(File.basename(path))

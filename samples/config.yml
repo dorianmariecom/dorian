@@ -1,8 +1,8 @@
 ---
 allowed_hosts:
-- localhost
-- example.com
-- api.example.com
+  - localhost
+  - example.com
+  - api.example.com
 app_config:
   debug_mode: false
   environment: production

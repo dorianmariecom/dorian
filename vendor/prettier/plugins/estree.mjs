@@ -1124,13 +1124,13 @@ function jt(e) {
 function uu(e) {
   return e.expressions
     ? e.expressions[0]
-    : (e.left ??
+    : e.left ??
         e.test ??
         e.callee ??
         e.object ??
         e.tag ??
         e.argument ??
-        e.expression);
+        e.expression;
 }
 function Pr(e) {
   if (e.expressions) return ["expressions", 0];

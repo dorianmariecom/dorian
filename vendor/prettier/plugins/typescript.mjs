@@ -21638,8 +21638,8 @@ function Uf(e, t) {
             Bn(q.name) |
             F(q.questionToken) |
             F(q.initializer) |
-            ((q.questionToken ?? q.type) ? 1 : 0) |
-            ((q.dotDotDotToken ?? q.initializer) ? 1024 : 0) |
+            (q.questionToken ?? q.type ? 1 : 0) |
+            (q.dotDotDotToken ?? q.initializer ? 1024 : 0) |
             (qn(q.modifiers) & 31 ? 8192 : 0)),
       (q.jsDoc = void 0),
       q
@@ -23339,9 +23339,7 @@ function Uf(e, t) {
       (d.type = _),
       (d.initializer = pn(c)),
       (d.transformFlags |=
-        Bn(d.name) |
-        F(d.initializer) |
-        ((d.exclamationToken ?? d.type) ? 1 : 0)),
+        Bn(d.name) | F(d.initializer) | (d.exclamationToken ?? d.type ? 1 : 0)),
       (d.jsDoc = void 0),
       d
     );
@@ -33272,7 +33270,7 @@ function We(e, t) {
 }
 function Fh(e) {
   let t = rr(e);
-  return t == null ? null : (t[t.length - 1] ?? null);
+  return t == null ? null : t[t.length - 1] ?? null;
 }
 function Vh(e) {
   return e.kind === ue.CommaToken;
@@ -36843,7 +36841,7 @@ function N0(e, t = {}) {
         (t.project &&
           t.projectService !== !1 &&
           (void 0).env.TYPESCRIPT_ESLINT_PROJECT_SERVICE === "true")
-          ? (F4 ?? (F4 = x0(t.projectService, E)))
+          ? F4 ?? (F4 = x0(t.projectService, E))
           : void 0,
       range: t.range === !0,
       singleRun: o,
@@ -36855,7 +36853,7 @@ function N0(e, t = {}) {
         (z4 = new S0(
           o
             ? "Infinity"
-            : (((l = t.cacheLifetime) == null ? void 0 : l.glob) ?? void 0),
+            : ((l = t.cacheLifetime) == null ? void 0 : l.glob) ?? void 0,
         )),
       tsconfigRootDir: h,
     };

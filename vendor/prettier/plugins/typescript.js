@@ -21807,8 +21807,8 @@ ${Me.join(`
               Bn(q.name) |
               F(q.questionToken) |
               F(q.initializer) |
-              ((q.questionToken ?? q.type) ? 1 : 0) |
-              ((q.dotDotDotToken ?? q.initializer) ? 1024 : 0) |
+              (q.questionToken ?? q.type ? 1 : 0) |
+              (q.dotDotDotToken ?? q.initializer ? 1024 : 0) |
               (qn(q.modifiers) & 31 ? 8192 : 0)),
         (q.jsDoc = void 0),
         q
@@ -23516,7 +23516,7 @@ ${Me.join(`
         (d.transformFlags |=
           Bn(d.name) |
           F(d.initializer) |
-          ((d.exclamationToken ?? d.type) ? 1 : 0)),
+          (d.exclamationToken ?? d.type ? 1 : 0)),
         (d.jsDoc = void 0),
         d
       );
@@ -33525,7 +33525,7 @@ ${Me.join(`
   }
   function zh(e) {
     let t = rr(e);
-    return t == null ? null : (t[t.length - 1] ?? null);
+    return t == null ? null : t[t.length - 1] ?? null;
   }
   function Fh(e) {
     return e.kind === ue.CommaToken;
@@ -37134,7 +37134,7 @@ ${Me.join(`
           (t.project &&
             t.projectService !== !1 &&
             (void 0).env.TYPESCRIPT_ESLINT_PROJECT_SERVICE === "true")
-            ? (Y4 ?? (Y4 = v0(t.projectService, E)))
+            ? Y4 ?? (Y4 = v0(t.projectService, E))
             : void 0,
         range: t.range === !0,
         singleRun: o,
@@ -37146,7 +37146,7 @@ ${Me.join(`
           (G4 = new T0(
             o
               ? "Infinity"
-              : (((l = t.cacheLifetime) == null ? void 0 : l.glob) ?? void 0),
+              : ((l = t.cacheLifetime) == null ? void 0 : l.glob) ?? void 0,
           )),
         tsconfigRootDir: h,
       };

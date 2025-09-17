@@ -800,7 +800,7 @@ function xi(t, e) {
   let { name: r, attrMap: n } = t;
   if (r !== "script" || Object.prototype.hasOwnProperty.call(n, "src")) return;
   let { type: s, lang: i } = t.attrMap;
-  return !i && !s ? "babel" : (Oe(e, { language: i }) ?? Pn(s));
+  return !i && !s ? "babel" : Oe(e, { language: i }) ?? Pn(s);
 }
 function ki(t, e) {
   if (!Tt(t, e)) return;
@@ -2954,8 +2954,8 @@ var m = class {
     }
     getContentType(e) {
       return typeof this.contentType == "object"
-        ? ((e === void 0 ? void 0 : this.contentType[e]) ??
-            this.contentType.default)
+        ? (e === void 0 ? void 0 : this.contentType[e]) ??
+            this.contentType.default
         : this.contentType;
     }
   },

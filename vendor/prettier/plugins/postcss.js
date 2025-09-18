@@ -9061,7 +9061,7 @@ ${e}`,
       let n = "";
       typeof t.selector == "string" &&
         ((n = t.raws.selector
-          ? t.raws.selector.scss ?? t.raws.selector.raw
+          ? (t.raws.selector.scss ?? t.raws.selector.raw)
           : t.selector),
         t.raws.between &&
           t.raws.between.trim().length > 0 &&
@@ -9069,14 +9069,14 @@ ${e}`,
         (t.raws.selector = n));
       let i = "";
       typeof t.value == "string" &&
-        ((i = t.raws.value ? t.raws.value.scss ?? t.raws.value.raw : t.value),
+        ((i = t.raws.value ? (t.raws.value.scss ?? t.raws.value.raw) : t.value),
         (i = i.trim()),
         (t.raws.value = i));
       let o = "";
       if (
         (typeof t.params == "string" &&
           ((o = t.raws.params
-            ? t.raws.params.scss ?? t.raws.params.raw
+            ? (t.raws.params.scss ?? t.raws.params.raw)
             : t.params),
           t.raws.afterName &&
             t.raws.afterName.trim().length > 0 &&

@@ -1,7 +1,7 @@
 ---
 allowed_hosts:
-  - example.com
-  - api.example.com
+- example.com
+- api.example.com
 app_config:
   debug_mode: false
   environment: production

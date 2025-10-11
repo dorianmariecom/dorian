@@ -1537,7 +1537,7 @@ class Dorian
       return :raw if ext == ".raw"
       return :env if path == ".env"
       return :env if path.start_with?(".env.")
-      return :sh if path == "Dockerfile"
+      return if path == "Dockerfile"
       return :sh if ext == ".sh"
       return :enc if ext == ".enc"
       return :enc if ext == ".keystore"

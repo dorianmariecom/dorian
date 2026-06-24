@@ -17,12 +17,12 @@ Gem::Specification.new do |s|
   s.add_dependency "dorian-eval", ">= 1.5.1", "< 2"
   s.add_dependency "dorian-progress", ">= 1.1.3", "< 2"
   s.add_dependency "dorian-to_struct", ">= 2.0.3", "< 3"
-  s.add_dependency "haml", ">= 6.4.0", "< 7.0"
+  s.add_dependency "haml", ">= 7.2.0", "< 8.0"
   s.add_dependency "hexapdf", ">= 1.9.1", "< 2"
   s.add_dependency "json", ">= 2.20.0", "< 3"
-  s.add_dependency "mini_racer", ">= 0.12.0", "< 0.13"
+  s.add_dependency "mini_racer", ">= 0.21.4", "< 1"
   s.add_dependency "ostruct", ">= 0.6.3", "< 1"
-  s.add_dependency "parallel", ">= 1.28.0", "< 2.0"
+  s.add_dependency "parallel", ">= 2.1.0", "< 3.0"
   s.add_dependency "syntax_tree", ">= 6.3.0", "< 7"
   s.add_dependency "syntax_tree-haml", ">= 4.0.3", "< 5"
   s.add_dependency "syntax_tree-xml", ">= 0.1.0", "< 1"
@@ -31,5 +31,5 @@ Gem::Specification.new do |s|
   s.add_dependency "yaml", ">= 0.4.0", "< 1"
 
   s.metadata = { "rubygems_mfa_required" => "true" }
-  s.required_ruby_version = ">= 3.0"
+  s.required_ruby_version = ">= 4.0"
 end

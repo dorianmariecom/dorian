@@ -1,138 +1,147 @@
 {
-  "author": "James Long",
-  "bin": "./bin/prettier.cjs",
-  "browser": "./standalone.js",
+  "name": "prettier",
+  "version": "3.8.4",
   "description": "Prettier is an opinionated code formatter",
-  "engines": {
-    "node": ">=14"
-  },
+  "bin": "./bin/prettier.cjs",
+  "repository": "prettier/prettier",
+  "funding": "https://github.com/prettier/prettier?sponsor=1",
+  "homepage": "https://prettier.io",
+  "author": "James Long",
+  "license": "MIT",
+  "main": "./index.cjs",
+  "browser": "./standalone.js",
+  "unpkg": "./standalone.js",
   "exports": {
     ".": {
-      "browser": {
-        "default": "./standalone.js",
-        "import": "./standalone.mjs"
-      },
-      "default": "./index.mjs",
+      "types": "./index.d.ts",
       "require": "./index.cjs",
-      "types": "./index.d.ts"
+      "browser": {
+        "import": "./standalone.mjs",
+        "default": "./standalone.js"
+      },
+      "default": "./index.mjs"
     },
     "./*": "./*",
     "./doc": {
-      "default": "./doc.mjs",
+      "types": "./doc.d.ts",
       "require": "./doc.js",
-      "types": "./doc.d.ts"
-    },
-    "./esm/parser-angular.mjs": "./plugins/angular.mjs",
-    "./esm/parser-babel.mjs": "./plugins/babel.mjs",
-    "./esm/parser-espree.mjs": "./plugins/acorn.mjs",
-    "./esm/parser-flow.mjs": "./plugins/flow.mjs",
-    "./esm/parser-glimmer.mjs": "./plugins/glimmer.mjs",
-    "./esm/parser-graphql.mjs": "./plugins/graphql.mjs",
-    "./esm/parser-html.mjs": "./plugins/html.mjs",
-    "./esm/parser-markdown.mjs": "./plugins/markdown.mjs",
-    "./esm/parser-meriyah.mjs": "./plugins/meriyah.mjs",
-    "./esm/parser-postcss.mjs": "./plugins/postcss.mjs",
-    "./esm/parser-typescript.mjs": "./plugins/typescript.mjs",
-    "./esm/parser-yaml.mjs": "./plugins/yaml.mjs",
-    "./esm/standalone.mjs": "./standalone.mjs",
-    "./parser-angular": "./plugins/angular.js",
-    "./parser-angular.js": "./plugins/angular.js",
-    "./parser-babel": "./plugins/babel.js",
-    "./parser-babel.js": "./plugins/babel.js",
-    "./parser-espree": "./plugins/acorn.js",
-    "./parser-espree.js": "./plugins/acorn.js",
-    "./parser-flow": "./plugins/flow.js",
-    "./parser-flow.js": "./plugins/flow.js",
-    "./parser-glimmer": "./plugins/glimmer.js",
-    "./parser-glimmer.js": "./plugins/glimmer.js",
-    "./parser-graphql": "./plugins/graphql.js",
-    "./parser-graphql.js": "./plugins/graphql.js",
-    "./parser-html": "./plugins/html.js",
-    "./parser-html.js": "./plugins/html.js",
-    "./parser-markdown": "./plugins/markdown.js",
-    "./parser-markdown.js": "./plugins/markdown.js",
-    "./parser-meriyah": "./plugins/meriyah.js",
-    "./parser-meriyah.js": "./plugins/meriyah.js",
-    "./parser-postcss": "./plugins/postcss.js",
-    "./parser-postcss.js": "./plugins/postcss.js",
-    "./parser-typescript": "./plugins/typescript.js",
-    "./parser-typescript.js": "./plugins/typescript.js",
-    "./parser-yaml": "./plugins/yaml.js",
-    "./parser-yaml.js": "./plugins/yaml.js",
-    "./plugins/acorn": {
-      "default": "./plugins/acorn.mjs",
-      "require": "./plugins/acorn.js",
-      "types": "./plugins/acorn.d.ts"
-    },
-    "./plugins/angular": {
-      "default": "./plugins/angular.mjs",
-      "require": "./plugins/angular.js",
-      "types": "./plugins/angular.d.ts"
-    },
-    "./plugins/babel": {
-      "default": "./plugins/babel.mjs",
-      "require": "./plugins/babel.js",
-      "types": "./plugins/babel.d.ts"
-    },
-    "./plugins/estree": {
-      "default": "./plugins/estree.mjs",
-      "require": "./plugins/estree.js",
-      "types": "./plugins/estree.d.ts"
-    },
-    "./plugins/flow": {
-      "default": "./plugins/flow.mjs",
-      "require": "./plugins/flow.js",
-      "types": "./plugins/flow.d.ts"
-    },
-    "./plugins/glimmer": {
-      "default": "./plugins/glimmer.mjs",
-      "require": "./plugins/glimmer.js",
-      "types": "./plugins/glimmer.d.ts"
-    },
-    "./plugins/graphql": {
-      "default": "./plugins/graphql.mjs",
-      "require": "./plugins/graphql.js",
-      "types": "./plugins/graphql.d.ts"
-    },
-    "./plugins/html": {
-      "default": "./plugins/html.mjs",
-      "require": "./plugins/html.js",
-      "types": "./plugins/html.d.ts"
-    },
-    "./plugins/markdown": {
-      "default": "./plugins/markdown.mjs",
-      "require": "./plugins/markdown.js",
-      "types": "./plugins/markdown.d.ts"
-    },
-    "./plugins/meriyah": {
-      "default": "./plugins/meriyah.mjs",
-      "require": "./plugins/meriyah.js",
-      "types": "./plugins/meriyah.d.ts"
-    },
-    "./plugins/postcss": {
-      "default": "./plugins/postcss.mjs",
-      "require": "./plugins/postcss.js",
-      "types": "./plugins/postcss.d.ts"
-    },
-    "./plugins/typescript": {
-      "default": "./plugins/typescript.mjs",
-      "require": "./plugins/typescript.js",
-      "types": "./plugins/typescript.d.ts"
-    },
-    "./plugins/yaml": {
-      "default": "./plugins/yaml.mjs",
-      "require": "./plugins/yaml.js",
-      "types": "./plugins/yaml.d.ts"
+      "default": "./doc.mjs"
     },
     "./standalone": {
-      "default": "./standalone.mjs",
+      "types": "./standalone.d.ts",
       "require": "./standalone.js",
-      "types": "./standalone.d.ts"
-    }
+      "default": "./standalone.mjs"
+    },
+    "./plugins/estree": {
+      "types": "./plugins/estree.d.ts",
+      "require": "./plugins/estree.js",
+      "default": "./plugins/estree.mjs"
+    },
+    "./plugins/babel": {
+      "types": "./plugins/babel.d.ts",
+      "require": "./plugins/babel.js",
+      "default": "./plugins/babel.mjs"
+    },
+    "./plugins/flow": {
+      "types": "./plugins/flow.d.ts",
+      "require": "./plugins/flow.js",
+      "default": "./plugins/flow.mjs"
+    },
+    "./plugins/typescript": {
+      "types": "./plugins/typescript.d.ts",
+      "require": "./plugins/typescript.js",
+      "default": "./plugins/typescript.mjs"
+    },
+    "./plugins/acorn": {
+      "types": "./plugins/acorn.d.ts",
+      "require": "./plugins/acorn.js",
+      "default": "./plugins/acorn.mjs"
+    },
+    "./plugins/meriyah": {
+      "types": "./plugins/meriyah.d.ts",
+      "require": "./plugins/meriyah.js",
+      "default": "./plugins/meriyah.mjs"
+    },
+    "./plugins/angular": {
+      "types": "./plugins/angular.d.ts",
+      "require": "./plugins/angular.js",
+      "default": "./plugins/angular.mjs"
+    },
+    "./plugins/postcss": {
+      "types": "./plugins/postcss.d.ts",
+      "require": "./plugins/postcss.js",
+      "default": "./plugins/postcss.mjs"
+    },
+    "./plugins/graphql": {
+      "types": "./plugins/graphql.d.ts",
+      "require": "./plugins/graphql.js",
+      "default": "./plugins/graphql.mjs"
+    },
+    "./plugins/markdown": {
+      "types": "./plugins/markdown.d.ts",
+      "require": "./plugins/markdown.js",
+      "default": "./plugins/markdown.mjs"
+    },
+    "./plugins/glimmer": {
+      "types": "./plugins/glimmer.d.ts",
+      "require": "./plugins/glimmer.js",
+      "default": "./plugins/glimmer.mjs"
+    },
+    "./plugins/html": {
+      "types": "./plugins/html.d.ts",
+      "require": "./plugins/html.js",
+      "default": "./plugins/html.mjs"
+    },
+    "./plugins/yaml": {
+      "types": "./plugins/yaml.d.ts",
+      "require": "./plugins/yaml.js",
+      "default": "./plugins/yaml.mjs"
+    },
+    "./esm/standalone.mjs": "./standalone.mjs",
+    "./parser-babel": "./plugins/babel.js",
+    "./parser-babel.js": "./plugins/babel.js",
+    "./esm/parser-babel.mjs": "./plugins/babel.mjs",
+    "./parser-flow": "./plugins/flow.js",
+    "./parser-flow.js": "./plugins/flow.js",
+    "./esm/parser-flow.mjs": "./plugins/flow.mjs",
+    "./parser-typescript": "./plugins/typescript.js",
+    "./parser-typescript.js": "./plugins/typescript.js",
+    "./esm/parser-typescript.mjs": "./plugins/typescript.mjs",
+    "./parser-espree": "./plugins/acorn.js",
+    "./parser-espree.js": "./plugins/acorn.js",
+    "./esm/parser-espree.mjs": "./plugins/acorn.mjs",
+    "./parser-meriyah": "./plugins/meriyah.js",
+    "./parser-meriyah.js": "./plugins/meriyah.js",
+    "./esm/parser-meriyah.mjs": "./plugins/meriyah.mjs",
+    "./parser-angular": "./plugins/angular.js",
+    "./parser-angular.js": "./plugins/angular.js",
+    "./esm/parser-angular.mjs": "./plugins/angular.mjs",
+    "./parser-postcss": "./plugins/postcss.js",
+    "./parser-postcss.js": "./plugins/postcss.js",
+    "./esm/parser-postcss.mjs": "./plugins/postcss.mjs",
+    "./parser-graphql": "./plugins/graphql.js",
+    "./parser-graphql.js": "./plugins/graphql.js",
+    "./esm/parser-graphql.mjs": "./plugins/graphql.mjs",
+    "./parser-markdown": "./plugins/markdown.js",
+    "./parser-markdown.js": "./plugins/markdown.js",
+    "./esm/parser-markdown.mjs": "./plugins/markdown.mjs",
+    "./parser-glimmer": "./plugins/glimmer.js",
+    "./parser-glimmer.js": "./plugins/glimmer.js",
+    "./esm/parser-glimmer.mjs": "./plugins/glimmer.mjs",
+    "./parser-html": "./plugins/html.js",
+    "./parser-html.js": "./plugins/html.js",
+    "./esm/parser-html.mjs": "./plugins/html.mjs",
+    "./parser-yaml": "./plugins/yaml.js",
+    "./parser-yaml.js": "./plugins/yaml.js",
+    "./esm/parser-yaml.mjs": "./plugins/yaml.mjs"
+  },
+  "engines": {
+    "node": ">=14"
   },
   "files": [
     "LICENSE",
     "README.md",
+    "THIRD-PARTY-NOTICES.md",
     "bin/prettier.cjs",
     "doc.d.ts",
     "doc.js",
@@ -141,7 +150,9 @@
     "index.d.ts",
     "index.d.ts",
     "index.mjs",
-    "internal/cli.mjs",
+    "internal/experimental-cli-worker.mjs",
+    "internal/experimental-cli.mjs",
+    "internal/legacy-cli.mjs",
     "package.json",
     "plugins/acorn.d.ts",
     "plugins/acorn.js",
@@ -186,13 +197,7 @@
     "standalone.js",
     "standalone.mjs"
   ],
-  "funding": "https://github.com/prettier/prettier?sponsor=1",
-  "homepage": "https://prettier.io",
-  "license": "MIT",
-  "main": "./index.cjs",
-  "name": "prettier",
   "preferUnplugged": true,
-  "repository": "prettier/prettier",
-  "unpkg": "./standalone.js",
-  "version": "3.3.3"
+  "sideEffects": false,
+  "type": "commonjs"
 }

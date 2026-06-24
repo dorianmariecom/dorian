@@ -5,11 +5,11 @@ require "dorian/arguments"
 require "dorian/eval"
 require "dorian/progress"
 require "dorian/to_struct"
-require "git"
 require "hexapdf"
 require "json"
 require "mini_racer"
 require "net/http"
+require "open3"
 require "parallel"
 require "shellwords"
 require "syntax_tree"
@@ -427,11 +427,9 @@ class Dorian
       JS
 
       if files.any?
-        each(files) { |file| format(file, context:) }
+        each(files) { |file| format(file, context: context) }
       else
-        each(
-          Git.open(".").ls_files.map(&:first)
-        ) { |file| format(file, context:) }
+        each(git_ls_files) { |file| format(file, context: context) }
       end
     end
 
@@ -489,8 +487,6 @@ class Dorian
       down = "│   "
       down_and_right = "├── "
 
-      git_ls_files = ->(path) { Git.open(".").ls_files(path).map(&:first) }
-
       group =
         lambda do |files|
           files
@@ -526,8 +522,7 @@ class Dorian
 
       keys.each do |key|
         files =
-          git_ls_files
-            .call(key)
+          git_ls_files(key)
             .map { |file| parsed.arguments.any? ? file.sub(key, "") : file }
         values = group.call(files)
         key = "#{key}/" if values.any? && key != "." && key[-1] != "/"
@@ -599,9 +594,10 @@ class Dorian
         { role: :user, content: content_3 }
       ]
 
-      message = completion(token: token(".commit"), model: "gpt-4o", messages:)
+      message =
+        completion(token: token(".commit"), model: "gpt-4o", messages: messages)
 
-      Git.open(".").commit(message)
+      git_commit(message)
 
       puts message
     end
@@ -683,10 +679,7 @@ class Dorian
 
     def command_dir
       puts(
-        Git
-          .open(".")
-          .ls_files
-          .map(&:first)
+        git_ls_files
           .map { |path| path.split("/").first }
           .select { |path| Dir.exist?(path) }
           .reject { |path| path.start_with?(".") }
@@ -699,10 +692,7 @@ class Dorian
 
     def command_ls
       puts(
-        Git
-          .open(".")
-          .ls_files
-          .map(&:first)
+        git_ls_files
           .map { |path| path.split("/").first }
           .reject { |path| path.start_with?(".") }
           .select { |path| match_filetypes?(path) }
@@ -737,21 +727,17 @@ class Dorian
           .reject { |line| line.empty? || line.start_with?("#") }
           .map { |pattern| Regexp.new("\\A#{pattern}\\z") }
 
-      Git
-        .open(dir)
-        .ls_files
-        .map(&:first)
-        .each do |file|
-          next if ignore_patterns.any? { |pattern| pattern.match?(file) }
+      git_ls_files(chdir: dir).each do |file|
+        next if ignore_patterns.any? { |pattern| pattern.match?(file) }
 
-          homefile = "#{Dir.home}/#{file}"
-          dotfile = File.expand_path("#{dir.chomp("/")}/#{file}")
-          if File.exist?(homefile) || File.symlink?(homefile)
-            File.delete(homefile)
-          end
-          FileUtils.mkdir_p(File.dirname(homefile))
-          FileUtils.ln_s(dotfile, homefile, verbose: true)
+        homefile = "#{Dir.home}/#{file}"
+        dotfile = File.expand_path("#{dir.chomp("/")}/#{file}")
+        if File.exist?(homefile) || File.symlink?(homefile)
+          File.delete(homefile)
         end
+        FileUtils.mkdir_p(File.dirname(homefile))
+        FileUtils.ln_s(dotfile, homefile, verbose: true)
+      end
     end
 
     def self?
@@ -774,7 +760,7 @@ class Dorian
           end
         end
 
-      compare(read_1, read_2, file_1:, file_2:)
+      compare(read_1, read_2, file_1: file_1, file_2: file_2)
     end
 
     def command_each
@@ -823,15 +809,17 @@ class Dorian
     def command_tally
       each(everything) do |input|
         outputs(
-          JSON.pretty_generate(
-            map(lines(reads(input)), progress: true) do |element|
-              if ruby.to_s.empty?
-                element
-              else
-                evaluates(it: element, returns: true, stdout: false)
-              end
-            end.tally
-          )
+          "#{
+            JSON.pretty_generate(
+              map(lines(reads(input)), progress: true) do |element|
+                if ruby.to_s.empty?
+                  element
+                else
+                  evaluates(it: element, returns: true, stdout: false)
+                end
+              end.tally
+            )
+          }\n"
         )
       end
     end
@@ -919,10 +907,16 @@ class Dorian
     end
 
     def outputs(content, file: nil)
+      return if content.nil?
+
+      output_content = to_output(content)
+
       if write? && file
-        File.write(file, to_output(content))
-      elsif !content.nil?
-        puts to_output(content)
+        File.write(file, output_content)
+      elsif output == :raw && content.is_a?(String)
+        print output_content
+      else
+        puts output_content
       end
     end
 
@@ -1127,7 +1121,7 @@ class Dorian
       end
     end
 
-    def each(collection, options: parallel_options, progress: false, &)
+    def each(collection, options: parallel_options, progress: false, &block)
       collection = wrap(collection)
       progress_bar = progress ? create_progress_bar(collection.size) : nil
 
@@ -1136,7 +1130,7 @@ class Dorian
           collection,
           **options,
           finish: ->(*) { progress_bar&.increment },
-          &
+          &block
         )
       else
         collection.each do |element|
@@ -1145,7 +1139,7 @@ class Dorian
       end
     end
 
-    def map(collection, options: parallel_options, progress: false, &)
+    def map(collection, options: parallel_options, progress: false, &block)
       collection = wrap(collection)
       progress_bar = progress ? create_progress_bar(collection.size) : nil
 
@@ -1154,7 +1148,7 @@ class Dorian
           collection,
           **options,
           finish: ->(*) { progress_bar&.increment },
-          &
+          &block
         )
       else
         collection.map do |element|
@@ -1163,7 +1157,7 @@ class Dorian
       end
     end
 
-    def select(collection, progress: false, &)
+    def select(collection, progress: false)
       collection = wrap(collection)
       progress_bar = progress ? create_progress_bar(collection.size) : nil
 
@@ -1172,7 +1166,7 @@ class Dorian
       end
     end
 
-    def reject(collection, progress: false, &)
+    def reject(collection, progress: false)
       collection = wrap(collection)
       progress_bar = progress ? create_progress_bar(collection.size) : nil
 
@@ -1219,7 +1213,7 @@ class Dorian
     def create_progress_bar(total)
       return unless progress?
 
-      Dorian::Progress.create(total:, format: progress_format)
+      Dorian::Progress.create(total: total, format: progress_format)
     end
 
     def after(input, ruby: @ruby_after || @ruby)
@@ -1229,7 +1223,7 @@ class Dorian
         selected = false
 
         input.select do |element|
-          selected = true if match?(element, ruby:)
+          selected = true if match?(element, ruby: ruby)
           selected
         end
       end
@@ -1242,7 +1236,7 @@ class Dorian
         selected = true
 
         input.select do |element|
-          selected.tap { selected = false if match?(element, ruby:) }
+          selected.tap { selected = false if match?(element, ruby: ruby) }
         end
       end
     end
@@ -1286,7 +1280,7 @@ class Dorian
     end
 
     def match?(element, ruby: @ruby)
-      !!evaluates(ruby:, it: element, stdout: false, returns: true)
+      !!evaluates(ruby: ruby, it: element, stdout: false, returns: true)
     end
 
     def token(file)
@@ -1312,7 +1306,7 @@ class Dorian
             "Content-Type" => "application/json",
             "Authorization" => "Bearer #{token}"
           },
-          body: { model:, messages: }.to_json
+          body: { model: model, messages: messages }.to_json
         )
 
       json = JSON.parse(body)
@@ -1354,8 +1348,8 @@ class Dorian
             content_1[key],
             content_2[key],
             path: new_path,
-            file_1:,
-            file_2:
+            file_1: file_1,
+            file_2: file_2
           )
         end
       elsif content_1.is_a?(Array) && content_2.is_a?(Array)
@@ -1373,8 +1367,8 @@ class Dorian
             content_1[index],
             content_2[index],
             path: new_path,
-            file_1:,
-            file_2:
+            file_1: file_1,
+            file_2: file_2
           )
         end
       elsif content_1.class != content_2.class
@@ -1407,6 +1401,20 @@ class Dorian
       return true if /\A#!.*ruby\z/.match?(first_line)
 
       false
+    end
+
+    def git_ls_files(path = nil, chdir: ".")
+      command = ["git", "-C", chdir, "ls-files"]
+      command.push("--", path) if path
+      stdout, stderr, status = Open3.capture3(*command)
+      abort stderr unless status.success?
+
+      stdout.lines.map(&:chomp)
+    end
+
+    def git_commit(message)
+      _stdout, stderr, status = Open3.capture3("git", "commit", "-m", message)
+      abort stderr unless status.success?
     end
 
     def pluck(element)
@@ -1448,9 +1456,9 @@ class Dorian
       headings = is_hashes ? data.first.to_h.keys : nil
       rows = is_hashes ? data.map(&:values) : data.map { |row| wrap(row) }
       if headings
-        puts Terminal::Table.new(headings:, rows:)
+        puts Terminal::Table.new(headings: headings, rows: rows)
       else
-        puts Terminal::Table.new(rows:)
+        puts Terminal::Table.new(rows: rows)
       end
     end
 
@@ -1466,15 +1474,15 @@ class Dorian
       returns: false
     )
       Dorian::Eval.eval(
-        ruby:,
-        it:,
-        debug:,
-        stdout:,
-        stderr:,
-        colorize:,
-        rails:,
-        fast:,
-        returns:
+        ruby: ruby,
+        it: it,
+        debug: debug,
+        stdout: stdout,
+        stderr: stderr,
+        colorize: colorize,
+        rails: rails,
+        fast: fast,
+        returns: returns
       ).returned
     end
 
@@ -1497,9 +1505,8 @@ class Dorian
     def filetype(path)
       ext = File.extname(path).to_s.downcase
 
-      if File.exist?(".format-ignore")
-        return if File.read(".format-ignore").split.map(&:strip).include?(path)
-      end
+      return if File.exist?(".format-ignore") &&
+        File.read(".format-ignore").split.map(&:strip).include?(path)
 
       return :directory if Dir.exist?(path)
       return :symlink if File.symlink?(path)

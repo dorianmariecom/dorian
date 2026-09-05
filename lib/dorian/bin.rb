@@ -1121,7 +1121,7 @@ class Dorian
       end
     end
 
-    def each(collection, options: parallel_options, progress: false, &block)
+    def each(collection, options: parallel_options, progress: false, &)
       collection = wrap(collection)
       progress_bar = progress ? create_progress_bar(collection.size) : nil
 
@@ -1130,7 +1130,7 @@ class Dorian
           collection,
           **options,
           finish: ->(*) { progress_bar&.increment },
-          &block
+          &
         )
       else
         collection.each do |element|
@@ -1139,7 +1139,7 @@ class Dorian
       end
     end
 
-    def map(collection, options: parallel_options, progress: false, &block)
+    def map(collection, options: parallel_options, progress: false, &)
       collection = wrap(collection)
       progress_bar = progress ? create_progress_bar(collection.size) : nil
 
@@ -1148,7 +1148,7 @@ class Dorian
           collection,
           **options,
           finish: ->(*) { progress_bar&.increment },
-          &block
+          &
         )
       else
         collection.map do |element|
